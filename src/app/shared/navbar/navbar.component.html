@@ -1,0 +1,14 @@
+<header class="app-navbar">
+  <div class="left">
+    <h3 class="brand">Udenar Compra Udenar</h3>
+  </div>
+  <div class="right">
+    <div *ngIf="currentUser" class="user-info">
+      <span class="user-name">👤 {{ currentUser.name }}</span>
+      <span class="user-role" [class.admin]="currentUser.role === 'admin'">
+        {{ currentUser.role === 'admin' ? 'Administrador' : 'Usuario' }}
+      </span>
+    </div>
+    <button class="btn btn-logout" (click)="logout()">Cerrar sesión</button>
+  </div>
+</header>

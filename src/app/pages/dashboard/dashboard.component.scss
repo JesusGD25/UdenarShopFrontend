@@ -1,0 +1,16 @@
+.dashboard-container {
+  display: flex;
+  height: calc(100vh - 64px);
+}
+
+app-sidebar {
+  width: 250px;
+  border-right: 1px solid #e0e0e0;
+}
+
+.dashboard-main {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+  background: #f7f9fc;
+}

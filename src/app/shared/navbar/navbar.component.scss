@@ -1,0 +1,75 @@
+.app-navbar {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.25rem;
+  background: linear-gradient(90deg, #0ab04a, #87d4ac);
+  color: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.left {
+  display: flex;
+  align-items: center;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.brand {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+
+  .user-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  .user-role {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    
+    &.admin {
+      background: rgba(255, 215, 0, 0.3);
+      font-weight: 600;
+    }
+  }
+}
+
+.btn {
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
+  color: white;
+  padding: 0.5rem 0.9rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-1px);
+  }
+
+  &.btn-logout {
+    background: rgba(220, 53, 69, 0.8);
+    
+    &:hover {
+      background: rgba(220, 53, 69, 1);
+    }
+  }
+}
