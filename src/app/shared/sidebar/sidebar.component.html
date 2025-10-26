@@ -1,11 +1,12 @@
 <aside class="app-sidebar">
   <nav>
     <ul>
-      <li><a routerLink="/dashboard">Inicio</a></li>
-      <li><a routerLink="/dashboard">Mis publicaciones</a></li>
-      <li><a routerLink="/dashboard">Crear publicación</a></li>
-      <li><a routerLink="/dashboard">Mensajes</a></li>
-      <li><a routerLink="/login">Cerrar sesión</a></li>
+      <li><a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">Inicio</a></li>
+      <li><a routerLink="/dashboard/products" routerLinkActive="active" class="nav-link">Productos en Venta</a></li>
+      <li><a routerLink="/dashboard/my-products" routerLinkActive="active" class="nav-link">Mis Productos</a></li>
+      <li><a routerLink="/dashboard/create-product" routerLinkActive="active" class="nav-link">Crear Producto</a></li>
+      <li><a routerLink="/dashboard/messages" routerLinkActive="active" class="nav-link">Mensajes</a></li>
+      <li class="logout"><a routerLink="/login" class="nav-link">Cerrar sesión</a></li>
     </ul>
   </nav>
 </aside>

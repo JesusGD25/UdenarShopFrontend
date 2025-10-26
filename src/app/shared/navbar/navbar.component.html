@@ -1,14 +1,16 @@
 <header class="app-navbar">
   <div class="left">
-    <h3 class="brand">Udenar Compra Udenar</h3>
+    <h3 class="brand">UdenarShop</h3>
   </div>
   <div class="right">
     <div *ngIf="currentUser" class="user-info">
-      <span class="user-name">👤 {{ currentUser.name }}</span>
+      <span class="user-name">{{ currentUser.name }}</span>
       <span class="user-role" [class.admin]="currentUser.role === 'admin'">
-        {{ currentUser.role === 'admin' ? 'Administrador' : 'Usuario' }}
+        {{ currentUser.role === 'admin' ? '👑 Administrador' : '👤 Usuario' }}
       </span>
     </div>
-    <button class="btn btn-logout" (click)="logout()">Cerrar sesión</button>
+    <button class="btn btn-logout" (click)="logout()">
+      <span>Cerrar sesión</span>
+    </button>
   </div>
 </header>

@@ -1,0 +1,50 @@
+<div class="products-page">
+    <header class="products-header">
+        <h2 class="section-title">Productos en Venta</h2>
+        <p class="products-count">{{ totalProducts }} productos encontrados</p>
+    </header>
+
+    @if (isLoading) {
+        <div class="loading-spinner">
+            <span class="loader"></span>
+            <p>Cargando productos...</p>
+        </div>
+    } @else if (error) {
+        <div class="error-message">
+            {{ error }}
+        </div>
+    } @else if (products.length === 0) {
+        <div class="no-products">
+            <p>No hay productos disponibles en este momento.</p>
+        </div>
+    } @else {
+        <div class="products-grid">
+            @for (product of products; track product.id) {
+                <app-product-card [product]="product"></app-product-card>
+            }
+        </div>
+
+        <div class="pagination">
+            <button class="btn btn-outline" 
+                    (click)="previousPage()" 
+                    [disabled]="currentPage === 1">
+                Anterior
+            </button>
+            
+            <div class="page-numbers">
+                @for (page of [].constructor(totalPages); track $index) {
+                    <button class="btn" 
+                            [class.active]="currentPage === $index + 1"
+                            (click)="goToPage($index + 1)">
+                        {{ $index + 1 }}
+                    </button>
+                }
+            </div>
+
+            <button class="btn btn-outline" 
+                    (click)="nextPage()" 
+                    [disabled]="currentPage === totalPages">
+                Siguiente
+            </button>
+        </div>
+    }

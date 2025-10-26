@@ -3,10 +3,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 1.25rem;
-  background: linear-gradient(90deg, #0ab04a, #87d4ac);
-  color: white;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  padding: 0 1.5rem;
+  background: var(--primary-gradient);
+  color: var(--text-on-primary);
+  box-shadow: 0 4px 20px var(--primary-shadow);
 }
 
 .left {
@@ -30,46 +30,53 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 2px;
+  gap: 4px;
 
   .user-name {
-    font-size: 0.9rem;
-    font-weight: 500;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-on-primary);
   }
 
   .user-role {
     font-size: 0.75rem;
-    padding: 2px 8px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
+    padding: 3px 10px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    font-weight: 500;
     
     &.admin {
-      background: rgba(255, 215, 0, 0.3);
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.3));
+      border-color: rgba(255, 215, 0, 0.3);
       font-weight: 600;
     }
   }
 }
 
 .btn {
-  background: rgba(255, 255, 255, 0.12);
-  border: none;
-  color: white;
-  padding: 0.5rem 0.9rem;
-  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--text-on-primary);
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 0.9rem;
+  font-weight: 500;
   transition: all 0.3s ease;
 
   &:hover {
     background: rgba(255, 255, 255, 0.25);
     transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 
   &.btn-logout {
-    background: rgba(220, 53, 69, 0.8);
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
     
     &:hover {
-      background: rgba(220, 53, 69, 1);
+      background: rgba(255, 255, 255, 0.3);
     }
   }
 }

@@ -1,4 +1,137 @@
-/* You can add global styles to this file, and also import other style files */
+/* Variables globales y estilos */
+:root {
+  /* Colores principales del login */
+  --primary-blue: #667eea;
+  --primary-purple: #764ba2;
+  --primary-gradient: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-purple) 100%);
+  
+  /* Paleta derivada */
+  --primary-light: #8c9ef0;
+  --primary-dark: #5a3b7e;
+  --accent-color: #667eea;
+  
+  /* Fondos y superficies */
+  --background-main: #f8fafc;
+  --background-light: #fff;
+  --background-dark: #1a1a1a;
+  
+  /* Textos */
+  --text-primary: #333;
+  --text-secondary: #666;
+  --text-light: #aaa;
+  --text-on-primary: #fff;
+  
+  /* Bordes y sombras */
+  --border-color: #e1e8ed;
+  --shadow-color: rgba(118, 75, 162, 0.1);
+  --primary-shadow: rgba(102, 126, 234, 0.25);
+  --hover-shadow: rgba(102, 126, 234, 0.4);
+}
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html, body { 
+  height: 100%; 
+  margin: 0;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  color: var(--text-primary);
+  line-height: 1.5;
+  background-color: var(--background-main);
+}
+
+.btn {
+  padding: 14px 24px;
+  background: var(--primary-gradient);
+  color: var(--text-on-primary);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px var(--hover-shadow);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  &.btn-outline {
+    background: transparent;
+    border: 2px solid var(--primary-blue);
+    color: var(--primary-blue);
+
+    &:hover {
+      background: var(--primary-gradient);
+      color: var(--text-on-primary);
+    }
+  }
+}
+
+.card {
+  background: var(--background-light);
+  border-radius: 12px;
+  box-shadow: 0 8px 30px var(--shadow-color);
+  padding: 24px;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 12px 40px var(--hover-shadow);
+  }
+}
+
+.input {
+  padding: 12px 16px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  background-color: var(--background-light);
+  color: var(--text-primary);
+
+  &:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px var(--primary-shadow);
+  }
+
+  &::placeholder {
+    color: var(--text-light);
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary);
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.nav-link {
+  transition: all 0.3s ease;
+  
+  &.active {
+    background: var(--primary-gradient);
+    color: var(--text-on-primary) !important;
+    box-shadow: 0 8px 25px var(--primary-shadow);
+  }
+  
+  &:hover:not(.active) {
+    color: var(--primary-blue);
+    background: var(--primary-shadow);
+  }
+}
+
+/* Utilidades de color */
+.text-primary { color: var(--primary-blue) !important; }
+.text-secondary { color: var(--primary-purple) !important; }
+.text-light { color: var(--text-light) !important; }
+.bg-gradient { background: var(--primary-gradient) !important; }
+.bg-light { background: var(--background-light) !important; }

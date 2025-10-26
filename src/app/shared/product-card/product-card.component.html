@@ -1,0 +1,13 @@
+<div class="product-card" [class.sold]="product.isSold">
+    <img [src]="product.imageUrl" [alt]="product.name" class="product-image">
+    <div class="product-condition" [class]="product.condition.toLowerCase()">{{ product.condition }}</div>
+    <h3 class="product-name">{{ product.name }}</h3>
+    <p class="product-price">{{ formatPrice(product.price) }}</p>
+    <p class="product-description">{{ product.description }}</p>
+    <div class="product-footer">
+        <span class="stock" [class.low-stock]="product.stock < 5">
+            Stock: {{ product.stock }}
+        </span>
+        <span class="status" *ngIf="product.isSold">VENDIDO</span>
+    </div>
+</div>

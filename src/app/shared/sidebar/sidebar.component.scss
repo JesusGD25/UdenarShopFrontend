@@ -1,27 +1,37 @@
 .app-sidebar {
   height: 100%;
   padding: 1rem;
-  background: #fafafa;
-}
+  background: var(--background-light);
+  box-shadow: 0 0 20px var(--shadow-color);
 
-ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
 
-li {
-  margin-bottom: 0.4rem;
-}
+  li {
+    margin-bottom: 0.8rem;
+  }
 
-a {
-  display: block;
-  text-decoration: none;
-  padding: 0.6rem 0.8rem;
-  border-radius: 6px;
-  color: #333;
-}
+  .nav-link {
+    display: block;
+    text-decoration: none;
+    padding: 0.8rem 1.2rem;
+    border-radius: 8px;
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+    font-weight: 500;
 
-a:hover {
-  background: rgba(0, 0, 0, 0.04);
+    &:hover:not(.active) {
+      background: var(--border-color);
+      transform: translateX(5px);
+    }
+
+    &.active {
+      background: var(--primary-gradient);
+      color: white;
+      box-shadow: 0 5px 15px var(--primary-shadow);
+    }
+  }
 }
