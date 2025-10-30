@@ -5,7 +5,7 @@ import { Observable, map } from 'rxjs';
 export enum ProductCondition {
   NEW = 'new',
   USED = 'used',
-  REFURBISHED = 'refurbished'
+  LIKE_NEW = 'like_new'
 }
 
 // Interfaz que representa los datos tal como vienen del backend
@@ -19,8 +19,33 @@ export interface BackendProduct {
   images?: string[];
   stock?: number;
   isSold?: boolean;
+  categoryId?: string;
+  sellerId?: string;
   createdAt?: Date;
   updatedAt?: Date;
+}
+
+// DTO para crear producto
+export interface CreateProductDto {
+  title: string;
+  description?: string;
+  price: number;
+  condition?: ProductCondition;
+  images?: string[];
+  stock?: number;
+  categoryId: string;
+}
+
+// DTO para actualizar producto
+export interface UpdateProductDto {
+  title?: string;
+  description?: string;
+  price?: number;
+  condition?: ProductCondition;
+  images?: string[];
+  stock?: number;
+  categoryId?: string;
+  isSold?: boolean;
 }
 
 // Interfaz que usamos en nuestra aplicación
@@ -125,6 +150,67 @@ export class ProductService {
         }
         
         // Si la respuesta ya tiene la estructura esperada
+        const typedResponse = response as BackendResponse;
+        return {
+          products: typedResponse.products.map(product => this.transformProduct(product)),
+          total: typedResponse.total
+        };
+      })
+    );
+  }
+
+  /**
+   * Crea un nuevo producto
+   */
+  createProduct(productData: CreateProductDto): Observable<Product> {
+    return this.http
+      .post<BackendProduct>(`${this.apiUrl}`, productData)
+      .pipe(map((product) => this.transformProduct(product)));
+  }
+
+  /**
+   * Actualiza un producto existente
+   */
+  updateProduct(term: string, productData: UpdateProductDto): Observable<Product> {
+    return this.http
+      .patch<BackendProduct>(`${this.apiUrl}/${term}`, productData)
+      .pipe(map((product) => this.transformProduct(product)));
+  }
+  /**
+  /**
+   * Elimina un producto
+   */
+  deleteProduct(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+  /**
+   * Obtiene un producto por ID o slug
+   */
+  getProduct(term: string): Observable<Product> {
+    return this.http
+      .get<BackendProduct>(`${this.apiUrl}/${term}`)
+      .pipe(map((product) => this.transformProduct(product)));
+  }
+
+  /**
+   * Obtiene productos del usuario autenticado
+   */
+  getMyProducts(page: number = 1, pageSize: number = 10): Observable<ProductsResponse> {
+    const offset = (page - 1) * pageSize;
+    const params = new HttpParams()
+      .set('limit', pageSize.toString())
+      .set('offset', offset.toString());
+
+    return this.http.get(`${this.apiUrl}/my-products`, { params }).pipe(
+      map(response => {
+        if (Array.isArray(response)) {
+          const products = response.map(product => this.transformProduct(product));
+          return {
+            products,
+            total: products.length
+          };
+        }
+        
         const typedResponse = response as BackendResponse;
         return {
           products: typedResponse.products.map(product => this.transformProduct(product)),

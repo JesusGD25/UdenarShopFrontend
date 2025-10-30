@@ -1,0 +1,88 @@
+<div class="register-container">
+  <div class="register-box">
+    <h2>Crear cuenta</h2>
+    <p class="subtitle">Únete a Udenar Shop</p>
+
+    <form (submit)="onSubmit($event)">
+      <div class="form-group">
+        <label for="name">Nombre completo *</label>
+        <input 
+          type="text" 
+          id="name" 
+          [(ngModel)]="name" 
+          name="name" 
+          placeholder="Juan Pérez"
+          [disabled]="isLoading"
+          required 
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="email">Correo electrónico *</label>
+        <input 
+          type="email" 
+          id="email" 
+          [(ngModel)]="email" 
+          name="email" 
+          placeholder="tu@email.com"
+          [disabled]="isLoading"
+          required 
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Teléfono (opcional)</label>
+        <input 
+          type="tel" 
+          id="phone" 
+          [(ngModel)]="phone" 
+          name="phone" 
+          placeholder="3001234567"
+          [disabled]="isLoading"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Contraseña *</label>
+        <input 
+          type="password" 
+          id="password" 
+          [(ngModel)]="password" 
+          name="password" 
+          placeholder="••••••••"
+          [disabled]="isLoading"
+          required 
+        />
+        <small class="hint">Mínimo 6 caracteres, incluye mayúscula, minúscula y número</small>
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Confirmar contraseña *</label>
+        <input 
+          type="password" 
+          id="confirmPassword" 
+          [(ngModel)]="confirmPassword" 
+          name="confirmPassword" 
+          placeholder="••••••••"
+          [disabled]="isLoading"
+          [class.error]="passwordMismatch"
+          required 
+        />
+        <small *ngIf="passwordMismatch" class="error-text">Las contraseñas no coinciden</small>
+      </div>
+
+      <button type="submit" [disabled]="isLoading" class="btn-register">
+        <span *ngIf="!isLoading">Registrarse</span>
+        <span *ngIf="isLoading">Creando cuenta...</span>
+      </button>
+
+      <div *ngIf="errorMessage" class="error-message">
+        <span>⚠️ {{ errorMessage }}</span>
+      </div>
+
+      <div class="login-link">
+        <p>¿Ya tienes una cuenta? <a routerLink="/login">Inicia sesión</a></p>
+      </div>
+    </form>
+  </div>
+</div>

@@ -3,16 +3,14 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ProductCardComponent } from '../../../shared/product-card/product-card.component';
 import { ProductService, Product } from '../../../services/product.service';
-import { HttpClientModule } from '@angular/common/http';
 
 @Component({
-  selector: 'app-products',
-  standalone: true,
-  imports: [CommonModule, ProductCardComponent, HttpClientModule],
-  templateUrl: './products.component.html',
-  styleUrls: ['./products.component.scss']
+  selector: 'app-my-products',
+  imports: [CommonModule, ProductCardComponent],
+  templateUrl: './my-products.component.html',
+  styleUrl: './my-products.component.scss'
 })
-export class ProductsComponent implements OnInit {
+export class MyProductsComponent implements OnInit {
   products: Product[] = [];
   currentPage = 1;
   pageSize = 10;
@@ -27,14 +25,14 @@ export class ProductsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadProducts();
+    this.loadMyProducts();
   }
 
-  loadProducts(page: number = 1): void {
+  loadMyProducts(page: number = 1): void {
     this.isLoading = true;
     this.error = null;
     
-    this.productService.getProducts(page).subscribe({
+    this.productService.getMyProducts(page, this.pageSize).subscribe({
       next: (response) => {
         this.products = response.products;
         this.totalProducts = response.total;
@@ -43,15 +41,11 @@ export class ProductsComponent implements OnInit {
         this.isLoading = false;
       },
       error: (error) => {
-        this.error = 'Error al cargar los productos. Por favor, intente nuevamente.';
+        this.error = 'Error al cargar tus productos. Por favor, intente nuevamente.';
         this.isLoading = false;
-        console.error('Error loading products:', error);
+        console.error('Error loading my products:', error);
       }
     });
-  }
-
-  navigateToAddProduct(): void {
-    this.router.navigate(['/dashboard/products/add']);
   }
 
   editProduct(id: string): void {
@@ -62,41 +56,34 @@ export class ProductsComponent implements OnInit {
     if (confirm('¿Estás seguro de que deseas eliminar este producto?')) {
       this.productService.deleteProduct(id).subscribe({
         next: () => {
-          // Recargar la página actual después de eliminar
-          this.loadProducts(this.currentPage);
+          // Recargar la lista después de eliminar
+          this.loadMyProducts(this.currentPage);
         },
         error: (error) => {
           console.error('Error al eliminar producto:', error);
-          this.error = error.error?.message || 'Error al eliminar el producto';
+          alert('Error al eliminar el producto. Por favor, intente nuevamente.');
         }
       });
     }
   }
 
-  nextPage(): void {
-    if (this.currentPage < this.totalPages) {
-      this.loadProducts(this.currentPage + 1);
-    }
+  navigateToAddProduct(): void {
+    this.router.navigate(['/dashboard/products/add']);
   }
 
   previousPage(): void {
     if (this.currentPage > 1) {
-      this.loadProducts(this.currentPage - 1);
+      this.loadMyProducts(this.currentPage - 1);
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.loadMyProducts(this.currentPage + 1);
     }
   }
 
   goToPage(page: number): void {
-    if (page >= 1 && page <= this.totalPages) {
-      this.loadProducts(page);
-    }
-  }
-
-  formatPrice(price: number): string {
-    return new Intl.NumberFormat('es-CO', {
-      style: 'currency',
-      currency: 'COP',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(price);
+    this.loadMyProducts(page);
   }
 }

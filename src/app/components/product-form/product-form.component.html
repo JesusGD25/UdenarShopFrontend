@@ -1,0 +1,186 @@
+<div class="product-form-container">
+  <h2>{{ isEditMode ? 'Editar Producto' : 'Agregar Nuevo Producto' }}</h2>
+
+  @if (error) {
+    <div class="alert alert-error">
+      {{ error }}
+    </div>
+  }
+
+  <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="product-form">
+    <!-- Título -->
+    <div class="form-group">
+      <label for="title">Título del producto *</label>
+      <input
+        type="text"
+        id="title"
+        formControlName="title"
+        placeholder="Ej: iPhone 14 Pro Max 256GB"
+        [class.error]="title?.invalid && title?.touched"
+      />
+      @if (title?.invalid && title?.touched) {
+        <span class="error-message">
+          @if (title?.errors?.['required']) {
+            El título es requerido
+          }
+          @if (title?.errors?.['minlength']) {
+            Mínimo 3 caracteres
+          }
+          @if (title?.errors?.['maxlength']) {
+            Máximo 200 caracteres
+          }
+        </span>
+      }
+    </div>
+
+    <!-- Descripción -->
+    <div class="form-group">
+      <label for="description">Descripción</label>
+      <textarea
+        id="description"
+        formControlName="description"
+        rows="4"
+        placeholder="Describe tu producto..."
+        [class.error]="description?.invalid && description?.touched"
+      ></textarea>
+      @if (description?.invalid && description?.touched) {
+        <span class="error-message">
+          @if (description?.errors?.['maxlength']) {
+            Máximo 2000 caracteres
+          }
+        </span>
+      }
+    </div>
+
+    <!-- Precio y Stock en fila -->
+    <div class="form-row">
+      <div class="form-group">
+        <label for="price">Precio (COP) *</label>
+        <input
+          type="number"
+          id="price"
+          formControlName="price"
+          placeholder="Ej: 3500000"
+          [class.error]="price?.invalid && price?.touched"
+        />
+        @if (price?.invalid && price?.touched) {
+          <span class="error-message">
+            @if (price?.errors?.['required']) {
+              El precio es requerido
+            }
+            @if (price?.errors?.['min']) {
+              Precio mínimo: $1.000 COP
+            }
+            @if (price?.errors?.['max']) {
+              Precio máximo: $999.999.999 COP
+            }
+          </span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="stock">Stock *</label>
+        <input
+          type="number"
+          id="stock"
+          formControlName="stock"
+          placeholder="Ej: 5"
+          [class.error]="stock?.invalid && stock?.touched"
+        />
+        @if (stock?.invalid && stock?.touched) {
+          <span class="error-message">
+            @if (stock?.errors?.['required']) {
+              El stock es requerido
+            }
+            @if (stock?.errors?.['min']) {
+              Stock mínimo: 0
+            }
+            @if (stock?.errors?.['max']) {
+              Stock máximo: 10.000
+            }
+          </span>
+        }
+      </div>
+    </div>
+
+    <!-- Condición y Categoría en fila -->
+    <div class="form-row">
+      <div class="form-group">
+        <label for="condition">Condición</label>
+        <select id="condition" formControlName="condition">
+          @for (option of conditionOptions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="categoryId">Categoría *</label>
+        <select
+          id="categoryId"
+          formControlName="categoryId"
+          [class.error]="categoryId?.invalid && categoryId?.touched"
+        >
+          <option value="">Seleccionar categoría</option>
+          @for (category of categories; track category.id) {
+            <option [value]="category.id">{{ category.name }}</option>
+          }
+        </select>
+        @if (categoryId?.invalid && categoryId?.touched) {
+          <span class="error-message">
+            La categoría es requerida
+          </span>
+        }
+      </div>
+    </div>
+
+    <!-- Imágenes -->
+    <div class="form-group">
+      <label>Imágenes (máximo 10)</label>
+      <div class="image-input-group">
+        <input
+          type="url"
+          [(ngModel)]="imageInput"
+          [ngModelOptions]="{standalone: true}"
+          placeholder="https://ejemplo.com/imagen.jpg"
+          (keyup.enter)="addImage()"
+        />
+        <button type="button" (click)="addImage()" class="btn-add-image">
+          Agregar
+        </button>
+      </div>
+
+      @if (images.length > 0) {
+        <div class="images-list">
+          @for (image of images; track $index) {
+            <div class="image-item">
+              <img [src]="image" [alt]="'Imagen ' + ($index + 1)" />
+              <button
+                type="button"
+                (click)="removeImage($index)"
+                class="btn-remove-image"
+                title="Eliminar imagen"
+              >
+                ×
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Botones -->
+    <div class="form-actions">
+      <button type="button" (click)="onCancel()" class="btn btn-secondary">
+        Cancelar
+      </button>
+      <button
+        type="submit"
+        [disabled]="productForm.invalid || isLoading"
+        class="btn btn-primary"
+      >
+        {{ isEditMode ? 'Actualizar' : 'Crear' }} Producto
+      </button>
+    </div>
+  </form>
+</div>

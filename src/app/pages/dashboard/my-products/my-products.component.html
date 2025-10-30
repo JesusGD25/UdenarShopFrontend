@@ -1,0 +1,86 @@
+<div class="my-products-page">
+    <header class="products-header">
+        <div class="header-content">
+            <div>
+                <h2 class="section-title">Mis Productos</h2>
+                <p class="products-count">{{ totalProducts }} productos publicados</p>
+            </div>
+            <button class="btn btn-primary" (click)="navigateToAddProduct()">
+                + Agregar Producto
+            </button>
+        </div>
+    </header>
+
+    @if (isLoading) {
+        <div class="loading-spinner">
+            <span class="loader"></span>
+            <p>Cargando tus productos...</p>
+        </div>
+    } @else if (error) {
+        <div class="error-message">
+            {{ error }}
+        </div>
+    } @else if (products.length === 0) {
+        <div class="no-products">
+            <div class="empty-state">
+                <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <rect x="2" y="7" width="20" height="15" rx="2" />
+                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+                </svg>
+                <h3>No tienes productos publicados</h3>
+                <p>Comienza a vender publicando tu primer producto</p>
+                <button class="btn btn-primary" (click)="navigateToAddProduct()">
+                    Publicar Producto
+                </button>
+            </div>
+        </div>
+    } @else {
+        <div class="products-grid">
+            @for (product of products; track product.id) {
+                <div class="product-wrapper">
+                    <app-product-card [product]="product"></app-product-card>
+                    <div class="product-actions">
+                        <button 
+                            class="btn btn-sm btn-edit" 
+                            (click)="editProduct(product.id)"
+                            title="Editar producto">
+                            ✏️ Editar
+                        </button>
+                        <button 
+                            class="btn btn-sm btn-delete" 
+                            (click)="deleteProduct(product.id)"
+                            title="Eliminar producto">
+                            🗑️ Eliminar
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (totalPages > 1) {
+            <div class="pagination">
+                <button class="btn btn-outline" 
+                        (click)="previousPage()" 
+                        [disabled]="currentPage === 1">
+                    Anterior
+                </button>
+                
+                <div class="page-numbers">
+                    @for (page of [].constructor(totalPages); track $index) {
+                        <button class="btn" 
+                                [class.active]="currentPage === $index + 1"
+                                (click)="goToPage($index + 1)">
+                            {{ $index + 1 }}
+                        </button>
+                    }
+                </div>
+
+                <button class="btn btn-outline" 
+                        (click)="nextPage()" 
+                        [disabled]="currentPage === totalPages">
+                    Siguiente
+                </button>
+            </div>
+        }
+    }
+</div>

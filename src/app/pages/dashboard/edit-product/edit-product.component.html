@@ -1,0 +1,27 @@
+<div class="edit-product-page">
+  @if (success) {
+    <div class="alert alert-success">
+      {{ success }}
+    </div>
+  }
+
+  @if (error) {
+    <div class="alert alert-error">
+      {{ error }}
+    </div>
+  }
+
+  @if (isLoading && !productData) {
+    <div class="loading">
+      <p>Cargando producto...</p>
+    </div>
+  }
+
+  @if (productData) {
+    <app-product-form
+      [productData]="productData"
+      (formSubmit)="onSubmit($event)"
+      (formCancel)="onCancel()"
+    ></app-product-form>
+  }
+</div>

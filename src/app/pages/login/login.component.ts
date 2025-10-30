@@ -1,26 +1,33 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, RouterLink],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   email = '';
   password = '';
   errorMessage = '';
   isLoading = false;
+  returnUrl = '/dashboard';
 
   constructor(
     private authService: AuthService, 
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
+
+  ngOnInit(): void {
+    // Obtener la URL de retorno si existe
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+  }
 
   onSubmit(event: Event) {
     event.preventDefault();
@@ -38,8 +45,9 @@ export class LoginComponent {
       next: (response) => {
         console.log('Login exitoso:', response);
         this.isLoading = false;
-        // Redirigir al dashboard
-        this.router.navigate(['/dashboard']);
+        
+        // Redirigir a la URL guardada o al dashboard
+        this.router.navigate([this.returnUrl]);
       },
       error: (error) => {
         console.error('Error en login:', error);
