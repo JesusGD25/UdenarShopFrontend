@@ -38,13 +38,13 @@ export class EditProductComponent implements OnInit {
         // Transformar el producto al formato del formulario
         this.productData = {
           id: product.id,
-          title: product.name,
+          title: product.title,
           description: product.description,
           price: product.price,
           condition: product.condition as ProductCondition,
-          images: product.imageUrl ? [product.imageUrl] : [],
+          images: product.images || [],
           stock: product.stock,
-          categoryId: '' // Esto debe venir del backend, por ahora vacío
+          categoryId: product.categoryId || ''
         };
         this.isLoading = false;
       },

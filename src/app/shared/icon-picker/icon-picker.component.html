@@ -1,0 +1,53 @@
+<div class="icon-picker-container">
+  <label class="picker-label">Icono</label>
+  
+  <div class="selected-icon-display" (click)="togglePicker()">
+    @if (selectedIconData) {
+      <lucide-icon [img]="selectedIconData.icon" [size]="24"></lucide-icon>
+      <span>{{ selectedIconData.name }}</span>
+    } @else {
+      <span class="placeholder">Selecciona un ícono</span>
+    }
+    <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <path d="M6 9l6 6 6-6"/>
+    </svg>
+  </div>
+
+  @if (showPicker) {
+    <div class="picker-dropdown">
+      <div class="picker-header">
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          placeholder="Buscar ícono..."
+          class="picker-search"
+          (click)="$event.stopPropagation()"
+        />
+      </div>
+
+      <div class="icons-grid">
+        @for (iconOption of filteredIcons; track iconOption.name) {
+          <button
+            type="button"
+            class="icon-option"
+            [class.selected]="selectedIcon === iconOption.name"
+            (click)="selectIcon(iconOption.name)"
+            [title]="iconOption.name"
+          >
+            <lucide-icon [img]="iconOption.icon" [size]="24"></lucide-icon>
+          </button>
+        }
+      </div>
+
+      @if (filteredIcons.length === 0) {
+        <div class="no-results">
+          <p>No se encontraron íconos</p>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+@if (showPicker) {
+  <div class="picker-overlay" (click)="closePicker()"></div>
+}

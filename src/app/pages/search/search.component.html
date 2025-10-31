@@ -1,0 +1,241 @@
+<div class="search-page">
+  <div class="search-container">
+    <!-- Encabezado con barra de búsqueda principal -->
+    <div class="search-header">
+      <h1>Explorar Productos</h1>
+      <div class="main-search-bar">
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (input)="onSearchInput($event)"
+          placeholder="Buscar productos..."
+          class="search-input"
+        />
+        <button class="search-button" (click)="performSearch()">
+          Buscar
+        </button>
+      </div>
+      @if (searchTerm.trim()) {
+        <div class="ai-indicator">
+          <span class="ai-badge">Búsqueda inteligente activada</span>
+          <small>La IA ampliará tu búsqueda para encontrar productos relacionados</small>
+        </div>
+      }
+    </div>
+
+    <div class="search-content">
+      <!-- Sidebar con filtros -->
+      <aside class="filters-sidebar">
+        <div class="filters-header">
+          <h3>Filtros</h3>
+          @if (hasActiveFilters) {
+            <button class="clear-filters" (click)="clearFilters()">
+              Limpiar filtros
+            </button>
+          }
+        </div>
+
+        <!-- Filtro por categorías -->
+        <div class="filter-section">
+          <h4>Categorías</h4>
+          <div class="category-filters">
+            @for (category of categories; track category.id) {
+              <label class="category-checkbox">
+                <input
+                  type="checkbox"
+                  [checked]="isCategorySelected(category.id)"
+                  (change)="toggleCategory(category.id)"
+                />
+                @if (getLucideIcon(category.iconUrl)) {
+                  <lucide-icon [img]="getLucideIcon(category.iconUrl)" [size]="18" class="category-icon"></lucide-icon>
+                } @else if (category.iconUrl) {
+                  <span class="category-icon">{{ category.iconUrl }}</span>
+                }
+                <span class="category-name">{{ category.name }}</span>
+              </label>
+            }
+          </div>
+        </div>
+
+        <!-- Filtro por rango de precio -->
+        <div class="filter-section">
+          <h4>Rango de Precio</h4>
+          <div class="price-inputs">
+            <input
+              type="number"
+              [(ngModel)]="minPrice"
+              (change)="onPriceChange()"
+              placeholder="Mínimo"
+              min="0"
+              class="price-input"
+            />
+            <span class="price-separator">-</span>
+            <input
+              type="number"
+              [(ngModel)]="maxPrice"
+              (change)="onPriceChange()"
+              placeholder="Máximo"
+              min="0"
+              class="price-input"
+            />
+          </div>
+        </div>
+
+        <!-- Filtro por condición -->
+        <div class="filter-section">
+          <h4>Condición</h4>
+          <select
+            [(ngModel)]="selectedCondition"
+            (change)="onConditionChange()"
+            class="condition-select"
+          >
+            @for (option of conditionOptions; track option.value) {
+              <option [value]="option.value">{{ option.label }}</option>
+            }
+          </select>
+        </div>
+      </aside>
+
+      <!-- Área principal de resultados -->
+      <main class="results-area">
+        <!-- Barra de herramientas con ordenamiento y resultados -->
+        <div class="results-toolbar">
+          <div class="results-info">
+            @if (isLoading) {
+              <span>Buscando...</span>
+            } @else {
+              <span>{{ total }} resultados encontrados</span>
+            }
+          </div>
+          <div class="sort-controls">
+            <label for="sortBy">Ordenar por:</label>
+            <select
+              id="sortBy"
+              [(ngModel)]="sortBy"
+              (change)="onSortChange()"
+              class="sort-select"
+            >
+              @for (option of sortOptions; track option.value) {
+                <option [value]="option.value">{{ option.label }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <!-- Loader -->
+        @if (isLoading) {
+          <div class="loading-container">
+            <div class="spinner"></div>
+            <p>Buscando productos...</p>
+          </div>
+        }
+
+        <!-- Grid de productos -->
+        @if (!isLoading && products.length > 0) {
+          <div class="products-grid">
+            @for (product of products; track product.id) {
+              <div class="product-card">
+                <div class="product-image-container" (click)="viewProduct(product.id)">
+                  @if (product.images && product.images.length > 0) {
+                    <img
+                      [src]="product.images[0]"
+                      [alt]="product.title"
+                      class="product-image"
+                    />
+                  } @else {
+                    <div class="no-image">Sin imagen</div>
+                  }
+                  @if (product.isSold) {
+                    <div class="sold-badge">VENDIDO</div>
+                  }
+                  <div class="condition-badge">
+                    {{ getConditionLabel(product.condition) }}
+                  </div>
+                </div>
+
+                <div class="product-info">
+                  <h3 class="product-title">{{ product.title }}</h3>
+                  
+                  @if (product.category) {
+                    <div class="product-category">
+                      @if (getLucideIcon(product.category.iconUrl)) {
+                        <lucide-icon [img]="getLucideIcon(product.category.iconUrl)" [size]="16"></lucide-icon>
+                      } @else if (product.category.iconUrl) {
+                        <span class="category-icon">{{ product.category.iconUrl }}</span>
+                      }
+                      {{ product.category.name }}
+                    </div>
+                  }
+
+                  <p class="product-description">{{ getShortDescription(product.description) }}</p>
+
+                  <div class="product-details">
+                    <p class="product-price">{{ formatPrice(product.price) }}</p>
+                    <p class="product-stock">Stock: {{ product.stock }} unidades</p>
+                  </div>
+
+                  @if (product.rating > 0) {
+                    <div class="product-rating">
+                      {{ product.rating.toFixed(1) }} ({{ product.totalReviews }} reseñas)
+                    </div>
+                  }
+
+                  <button class="btn-view-more" (click)="viewProduct(product.id); $event.stopPropagation()">
+                    Ver más
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- Paginación -->
+          @if (totalPages > 1) {
+            <div class="pagination">
+              <button
+                class="page-btn"
+                [disabled]="currentPage === 1"
+                (click)="previousPage()"
+              >
+                ← Anterior
+              </button>
+
+              <div class="page-numbers">
+                @for (page of [].constructor(totalPages); track $index) {
+                  <button
+                    class="page-number"
+                    [class.active]="currentPage === $index + 1"
+                    (click)="goToPage($index + 1)"
+                  >
+                    {{ $index + 1 }}
+                  </button>
+                }
+              </div>
+
+              <button
+                class="page-btn"
+                [disabled]="currentPage === totalPages"
+                (click)="nextPage()"
+              >
+                Siguiente →
+              </button>
+            </div>
+          }
+        }
+
+        <!-- Estado vacío -->
+        @if (!isLoading && products.length === 0) {
+          <div class="empty-state">
+            <div class="empty-icon">Sin resultados</div>
+            <h2>No se encontraron productos</h2>
+            <p>Intenta ajustar tus filtros de búsqueda</p>
+            @if (hasActiveFilters) {
+              <button class="btn-primary" (click)="clearFilters()">
+                Limpiar filtros
+              </button>
+            }
+          </div>
+        }
+      </main>
+    </div>
+  </div>
+</div>

@@ -13,7 +13,12 @@
 
     &:hover {
         transform: translateY(-5px);
-        box-shadow: 0 15px 50px var(--primary-shadow);
+        box-shadow: 0 15px 50px rgba(60, 141, 53, 0.3);
+
+        .btn-view-more {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     &.sold {
@@ -51,17 +56,17 @@
         z-index: 1;
 
         &.new {
-            background-color: var(--success-color, #4CAF50);
+            background-color: #4CAF50;
             color: white;
         }
 
         &.used {
-            background-color: var(--warning-color, #FF9800);
+            background-color: #FF9800;
             color: white;
         }
 
         &.like_new {
-            background-color: var(--info-color, #2196F3);
+            background-color: #2196F3;
             color: white;
         }
     }
@@ -83,7 +88,7 @@
 
     .product-price {
         font-size: 1.25rem;
-        color: var(--primary-color);
+        color: var(--primary-green);
         font-weight: 600;
         margin: 0 16px 12px 16px;
     }
@@ -108,7 +113,7 @@
         align-items: center;
         margin-top: auto;
         padding: 16px;
-        border-top: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
+        border-top: 1px solid var(--border-color);
         background: rgba(0, 0, 0, 0.02);
 
         .stock {
@@ -117,7 +122,7 @@
             font-weight: 500;
             
             &.low-stock {
-                color: var(--warning-color, #FF9800);
+                color: var(--warning);
                 font-weight: 600;
             }
         }
@@ -125,10 +130,38 @@
         .status {
             font-size: 0.875rem;
             font-weight: 600;
-            color: var(--error-color, #f44336);
-            background: rgba(244, 67, 54, 0.1);
+            color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
             padding: 4px 8px;
             border-radius: 4px;
+        }
+    }
+
+    .btn-view-more {
+        position: absolute;
+        bottom: 16px;
+        left: 50%;
+        transform: translateX(-50%) translateY(10px);
+        padding: 0.75rem 1.5rem;
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+        border-radius: var(--radius-lg);
+        font-weight: 600;
+        font-size: 0.875rem;
+        cursor: pointer;
+        opacity: 0;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-lg);
+        z-index: 2;
+
+        &:hover {
+            transform: translateX(-50%) translateY(0) scale(1.05);
+            box-shadow: var(--shadow-xl);
+        }
+
+        &:active {
+            transform: translateX(-50%) translateY(0) scale(0.98);
         }
     }
 }

@@ -1,0 +1,251 @@
+<div class="product-detail-container">
+  @if (isLoading) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Cargando producto...</p>
+    </div>
+  } @else if (error) {
+    <div class="error-state">
+      <h2>😕 Error al cargar</h2>
+      <p>{{ error }}</p>
+      <button class="btn btn-primary" (click)="goBack()">
+        <lucide-icon [img]="ArrowLeft" [size]="20"></lucide-icon>
+        <span>Volver</span>
+      </button>
+    </div>
+  } @else if (product) {
+    <!-- Header con botón volver -->
+    <div class="page-header">
+      <button class="btn-back" (click)="goBack()">
+        <lucide-icon [img]="ArrowLeft" [size]="20"></lucide-icon>
+        <span>Volver</span>
+      </button>
+
+      <div class="header-actions">
+        @if (isOwner || isAdmin) {
+          <button class="btn btn-outline" (click)="editProduct()">
+            <lucide-icon [img]="Edit" [size]="18"></lucide-icon>
+            <span>Editar</span>
+          </button>
+        }
+        @if (isOwner || isAdmin) {
+          <button class="btn btn-danger" (click)="openDeleteModal()">
+            <lucide-icon [img]="Trash2" [size]="18"></lucide-icon>
+            <span>Eliminar</span>
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="product-content">
+      <!-- Galería de imágenes -->
+      <div class="product-gallery">
+        @if (product.images && product.images.length > 0) {
+          <div class="main-image">
+            <img 
+              [src]="product.images[currentImageIndex]" 
+              [alt]="product.title"
+            />
+            
+            @if (product.images.length > 1) {
+              <button class="nav-btn prev" (click)="previousImage()">‹</button>
+              <button class="nav-btn next" (click)="nextImage()">›</button>
+            }
+          </div>
+
+          @if (product.images.length > 1) {
+            <div class="thumbnails">
+              @for (image of product.images; track $index) {
+                <div 
+                  class="thumbnail"
+                  [class.active]="currentImageIndex === $index"
+                  (click)="changeImage($index)"
+                >
+                  <img [src]="image" [alt]="'Imagen ' + ($index + 1)">
+                </div>
+              }
+            </div>
+          }
+        } @else {
+          <div class="no-image">
+            <lucide-icon [img]="Package" [size]="80"></lucide-icon>
+            <p>Sin imagen</p>
+          </div>
+        }
+      </div>
+
+      <!-- Información del producto -->
+      <div class="product-info">
+        <!-- Categoría y condición -->
+        <div class="product-meta">
+          @if (category) {
+            <span class="category-badge">
+              <span class="category-icon">{{ category.iconUrl || '📦' }}</span>
+              {{ category.name }}
+            </span>
+          }
+          <span class="condition-badge" [class]="'condition-' + product.condition">
+            {{ getConditionLabel(product.condition) }}
+          </span>
+        </div>
+
+        <!-- Título -->
+        <h1 class="product-title">{{ product.title }}</h1>
+
+        <!-- Precio y stock -->
+        <div class="price-stock">
+          <div class="price-section">
+            <span class="price-label">Precio</span>
+            <span class="price-value">{{ formatPrice(product.price) }}</span>
+          </div>
+          <div class="stock-section">
+            <lucide-icon [img]="Package" [size]="18"></lucide-icon>
+            <span>{{ product.stock }} disponibles</span>
+          </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="action-buttons">
+          @if (!isOwner) {
+            <button class="btn btn-primary btn-lg" (click)="addToCart()">
+              <lucide-icon [img]="ShoppingCart" [size]="20"></lucide-icon>
+              <span>Agregar al Carrito</span>
+            </button>
+            <button class="btn btn-accent btn-lg" (click)="contactSeller()">
+              <lucide-icon [img]="MessageSquare" [size]="20"></lucide-icon>
+              <span>Contactar Vendedor</span>
+            </button>
+          }
+        </div>
+
+        <!-- Botones secundarios -->
+        <div class="secondary-actions">
+          @if (!isOwner) {
+            <button class="btn-icon-text" (click)="addToFavorites()">
+              <lucide-icon [img]="Heart" [size]="20"></lucide-icon>
+              <span>Guardar</span>
+            </button>
+          }
+          <button class="btn-icon-text" (click)="shareProduct()">
+            <lucide-icon [img]="Share2" [size]="20"></lucide-icon>
+            <span>Compartir</span>
+          </button>
+        </div>
+
+        <!-- Descripción -->
+        @if (product.description) {
+          <div class="product-description">
+            <h3>Descripción</h3>
+            <p>{{ product.description }}</p>
+          </div>
+        }
+
+        <!-- Detalles del producto -->
+        <div class="product-details">
+          <h3>Detalles del Producto</h3>
+          <div class="details-grid">
+            <div class="detail-item">
+              <span class="detail-label">Condición</span>
+              <span class="detail-value">{{ getConditionLabel(product.condition) }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Stock</span>
+              <span class="detail-value">{{ product.stock }} unidades</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Estado</span>
+              <span class="detail-value">
+                @if (product.isSold) {
+                  <span class="status-badge sold">
+                    <lucide-icon [img]="XCircle" [size]="16"></lucide-icon>
+                    Vendido
+                  </span>
+                } @else {
+                  <span class="status-badge available">
+                    <lucide-icon [img]="CheckCircle" [size]="16"></lucide-icon>
+                    Disponible
+                  </span>
+                }
+              </span>
+            </div>
+            @if (category) {
+              <div class="detail-item">
+                <span class="detail-label">Categoría</span>
+                <span class="detail-value">{{ category.name }}</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Información del vendedor -->
+        @if (product.seller) {
+          <div class="seller-info">
+            <h3>Información del Vendedor</h3>
+            <div class="seller-card">
+              <div class="seller-avatar">
+                @if (product.seller.avatar) {
+                  <img [src]="product.seller.avatar" [alt]="product.seller.name">
+                } @else {
+                  <div class="avatar-placeholder">
+                    {{ product.seller.name.charAt(0).toUpperCase() }}
+                  </div>
+                }
+              </div>
+              <div class="seller-details">
+                <h4>{{ product.seller.name }}</h4>
+                @if (product.seller.email) {
+                  <p class="seller-email">{{ product.seller.email }}</p>
+                }
+                @if (!isOwner) {
+                  <button class="btn btn-sm btn-ghost" (click)="contactSeller()">
+                    <lucide-icon [img]="MessageSquare" [size]="16"></lucide-icon>
+                    <span>Enviar mensaje</span>
+                  </button>
+                }
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Fecha de publicación -->
+        <div class="publication-date">
+          <small>
+            Publicado el {{ product.createdAt | date: 'dd/MM/yyyy' }} a las {{ product.createdAt | date: 'HH:mm' }}
+          </small>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
+<!-- Delete Modal -->
+@if (showDeleteModal && product) {
+  <div class="modal-overlay" (click)="closeDeleteModal()">
+    <div class="modal-content modal-sm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Eliminar Producto</h2>
+        <button class="btn-close" (click)="closeDeleteModal()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <p>¿Estás seguro de que deseas eliminar el producto <strong>{{ product.title }}</strong>?</p>
+        <p class="warning-text">⚠️ Esta acción no se puede deshacer.</p>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="closeDeleteModal()">
+          Cancelar
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-danger" 
+          (click)="deleteProduct()" 
+          [disabled]="isDeleting"
+        >
+          {{ isDeleting ? 'Eliminando...' : 'Eliminar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

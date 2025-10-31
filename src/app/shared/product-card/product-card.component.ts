@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { Product } from '../../services/product.service';
 
 @Component({
@@ -12,6 +13,8 @@ import { Product } from '../../services/product.service';
 export class ProductCardComponent {
   @Input() product!: Product;
 
+  constructor(private router: Router) {}
+
   formatPrice(price: number): string {
     return new Intl.NumberFormat('es-CO', {
       style: 'currency',
@@ -19,5 +22,9 @@ export class ProductCardComponent {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
     }).format(price);
+  }
+
+  viewProduct(): void {
+    this.router.navigate(['/dashboard/products', this.product.id]);
   }
 }

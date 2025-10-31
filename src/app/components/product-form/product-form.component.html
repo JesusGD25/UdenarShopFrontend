@@ -7,6 +7,12 @@
     </div>
   }
 
+  @if (aiSuccess) {
+    <div class="alert alert-success">
+      {{ aiSuccess }}
+    </div>
+  }
+
   <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="product-form">
     <!-- Título -->
     <div class="form-group">
@@ -35,12 +41,34 @@
 
     <!-- Descripción -->
     <div class="form-group">
-      <label for="description">Descripción</label>
+      <div class="label-with-action">
+        <label for="description">Descripción</label>
+        <button
+          type="button"
+          (click)="generateWithAi()"
+          class="btn-ai"
+          [disabled]="isGeneratingWithAi || !title?.value || title?.value.trim().length < 3"
+          title="Generar o mejorar descripción con IA"
+        >
+          @if (isGeneratingWithAi) {
+            <span class="ai-loading">✨ Generando...</span>
+          } @else {
+            <span>
+              ✨ Generar con IA
+              @if (hasUploadedImages) {
+                <small style="display: block; font-size: 0.75rem; opacity: 0.9; margin-top: 2px;">
+                  📸 Analizará las imágenes
+                </small>
+              }
+            </span>
+          }
+        </button>
+      </div>
       <textarea
         id="description"
         formControlName="description"
         rows="4"
-        placeholder="Describe tu producto..."
+        placeholder="Describe tu producto... o usa IA para generarla automáticamente"
         [class.error]="description?.invalid && description?.touched"
       ></textarea>
       @if (description?.invalid && description?.touched) {
@@ -136,20 +164,36 @@
 
     <!-- Imágenes -->
     <div class="form-group">
-      <label>Imágenes (máximo 10)</label>
-      <div class="image-input-group">
+      <label>Imágenes del producto * (máximo 5)</label>
+      
+      <!-- Botón para seleccionar archivos -->
+      <div class="file-upload-container">
         <input
-          type="url"
-          [(ngModel)]="imageInput"
-          [ngModelOptions]="{standalone: true}"
-          placeholder="https://ejemplo.com/imagen.jpg"
-          (keyup.enter)="addImage()"
+          type="file"
+          #fileInput
+          accept="image/*"
+          multiple
+          (change)="onFileSelected($event)"
+          style="display: none"
         />
-        <button type="button" (click)="addImage()" class="btn-add-image">
-          Agregar
+        <button
+          type="button"
+          (click)="fileInput.click()"
+          class="btn-upload"
+          [disabled]="isUploadingImages || images.length >= 5"
+        >
+          @if (isUploadingImages) {
+            <span>⏳ Subiendo...</span>
+          } @else {
+            <span>📁 Seleccionar Imágenes</span>
+          }
         </button>
+        <small class="upload-hint">
+          JPG, PNG, GIF o WebP • Máximo 5MB por imagen • Mínimo 1 imagen requerida
+        </small>
       </div>
 
+      <!-- Lista de imágenes -->
       @if (images.length > 0) {
         <div class="images-list">
           @for (image of images; track $index) {
@@ -160,11 +204,16 @@
                 (click)="removeImage($index)"
                 class="btn-remove-image"
                 title="Eliminar imagen"
+                [disabled]="isUploadingImages"
               >
                 ×
               </button>
             </div>
           }
+        </div>
+      } @else {
+        <div class="no-images-warning">
+          ⚠️ Debes subir al menos una imagen del producto
         </div>
       }
     </div>

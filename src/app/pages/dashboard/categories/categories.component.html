@@ -1,0 +1,320 @@
+<div class="categories-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Gestión de Categorías</h1>
+      <p class="subtitle">Administra las categorías de productos del marketplace</p>
+    </div>
+    <button class="btn btn-primary" (click)="openCreateModal()">
+      <lucide-icon [img]="Plus" [size]="20"></lucide-icon>
+      <span>Nueva Categoría</span>
+    </button>
+  </div>
+
+  <!-- Success Message -->
+  @if (successMessage) {
+    <div class="alert alert-success">
+      <lucide-icon [img]="Check" [size]="20"></lucide-icon>
+      <span>{{ successMessage }}</span>
+    </div>
+  }
+
+  <!-- Error Message -->
+  @if (error && !showCreateModal && !showEditModal) {
+    <div class="alert alert-danger">
+      <span>{{ error }}</span>
+    </div>
+  }
+
+  <!-- Search Bar -->
+  <div class="search-bar">
+    <lucide-icon [img]="Search" [size]="20" class="search-icon"></lucide-icon>
+    <input
+      type="text"
+      [(ngModel)]="searchTerm"
+      (input)="filterCategories()"
+      placeholder="Buscar categorías por nombre, descripción o slug..."
+      class="search-input"
+    />
+    <button class="btn-icon" (click)="loadCategories()" title="Recargar">
+      <lucide-icon [img]="RefreshCw" [size]="20"></lucide-icon>
+    </button>
+  </div>
+
+  <!-- Categories Table -->
+  <div class="table-container">
+    @if (isLoading && categories.length === 0) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Cargando categorías...</p>
+      </div>
+    } @else if (filteredCategories.length === 0) {
+      <div class="empty-state">
+        <span class="empty-icon">📁</span>
+        <h3>No se encontraron categorías</h3>
+        <p>{{ searchTerm ? 'Intenta con otra búsqueda' : 'Crea tu primera categoría para comenzar' }}</p>
+      </div>
+    } @else {
+      <table class="categories-table">
+        <thead>
+          <tr>
+            <th>Icono</th>
+            <th>Nombre</th>
+            <th>Slug</th>
+            <th>Descripción</th>
+            <th>Estado</th>
+            <th>Fecha Creación</th>
+            <th class="actions-col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (category of filteredCategories; track category.id) {
+            <tr [class.inactive]="!category.isActive">
+              <td class="icon-cell">
+                @if (getLucideIcon(category.iconUrl)) {
+                  <lucide-icon 
+                    [img]="getLucideIcon(category.iconUrl)" 
+                    [size]="24"
+                    class="category-icon-display"
+                  ></lucide-icon>
+                } @else {
+                  <span class="category-icon">{{ category.iconUrl || getDefaultIcon(category.name) }}</span>
+                }
+              </td>
+              <td class="name-cell">
+                <strong>{{ category.name }}</strong>
+              </td>
+              <td class="slug-cell">
+                <code>{{ category.slug }}</code>
+              </td>
+              <td class="description-cell">
+                {{ category.description || 'Sin descripción' }}
+              </td>
+              <td class="status-cell">
+                @if (category.isActive) {
+                  <span class="badge badge-success">Activa</span>
+                } @else {
+                  <span class="badge badge-danger">Inactiva</span>
+                }
+              </td>
+              <td class="date-cell">
+                {{ category.createdAt | date: 'dd/MM/yyyy' }}
+              </td>
+              <td class="actions-cell">
+                <div class="action-buttons">
+                  @if (!category.isActive) {
+                    <button
+                      class="btn-action btn-success"
+                      (click)="activateCategory(category)"
+                      title="Activar categoría"
+                    >
+                      <lucide-icon [img]="Check" [size]="16"></lucide-icon>
+                    </button>
+                  }
+                  <button
+                    class="btn-action btn-edit"
+                    (click)="openEditModal(category)"
+                    title="Editar categoría"
+                  >
+                    <lucide-icon [img]="Edit" [size]="16"></lucide-icon>
+                  </button>
+                  @if (category.isActive) {
+                    <button
+                      class="btn-action btn-delete"
+                      (click)="openDeleteModal(category)"
+                      title="Desactivar categoría"
+                    >
+                      <lucide-icon [img]="Trash2" [size]="16"></lucide-icon>
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</div>
+
+<!-- Create Modal -->
+@if (showCreateModal) {
+  <div class="modal-overlay" (click)="closeCreateModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Crear Nueva Categoría</h2>
+        <button class="btn-close" (click)="closeCreateModal()">
+          <lucide-icon [img]="X" [size]="24"></lucide-icon>
+        </button>
+      </div>
+
+      @if (error) {
+        <div class="alert alert-danger">
+          {{ error }}
+        </div>
+      }
+
+      <form (ngSubmit)="createCategory()" class="modal-form">
+        <div class="form-group">
+          <label for="create-name">Nombre *</label>
+          <input
+            id="create-name"
+            type="text"
+            [(ngModel)]="categoryForm.name"
+            name="name"
+            placeholder="Ej: Electrónica"
+            required
+            class="input"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="create-description">Descripción</label>
+          <textarea
+            id="create-description"
+            [(ngModel)]="categoryForm.description"
+            name="description"
+            rows="3"
+            placeholder="Describe la categoría..."
+            class="input"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <app-icon-picker
+            [selectedIcon]="categoryForm.iconUrl || ''"
+            (iconSelected)="onIconSelected($event)"
+          ></app-icon-picker>
+        </div>
+
+        <div class="form-group checkbox-group">
+          <label>
+            <input
+              type="checkbox"
+              [(ngModel)]="categoryForm.isActive"
+              name="isActive"
+            />
+            <span>Activar categoría inmediatamente</span>
+          </label>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeCreateModal()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="isLoading">
+            {{ isLoading ? 'Creando...' : 'Crear Categoría' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Edit Modal -->
+@if (showEditModal && selectedCategory) {
+  <div class="modal-overlay" (click)="closeEditModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Editar Categoría</h2>
+        <button class="btn-close" (click)="closeEditModal()">
+          <lucide-icon [img]="X" [size]="24"></lucide-icon>
+        </button>
+      </div>
+
+      @if (error) {
+        <div class="alert alert-danger">
+          {{ error }}
+        </div>
+      }
+
+      <form (ngSubmit)="updateCategory()" class="modal-form">
+        <div class="form-group">
+          <label for="edit-name">Nombre *</label>
+          <input
+            id="edit-name"
+            type="text"
+            [(ngModel)]="categoryForm.name"
+            name="name"
+            placeholder="Ej: Electrónica"
+            required
+            class="input"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="edit-description">Descripción</label>
+          <textarea
+            id="edit-description"
+            [(ngModel)]="categoryForm.description"
+            name="description"
+            rows="3"
+            placeholder="Describe la categoría..."
+            class="input"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <app-icon-picker
+            [selectedIcon]="categoryForm.iconUrl || ''"
+            (iconSelected)="onIconSelected($event)"
+          ></app-icon-picker>
+        </div>
+
+        <div class="form-group checkbox-group">
+          <label>
+            <input
+              type="checkbox"
+              [(ngModel)]="categoryForm.isActive"
+              name="isActive"
+            />
+            <span>Categoría activa</span>
+          </label>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeEditModal()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="isLoading">
+            {{ isLoading ? 'Actualizando...' : 'Actualizar Categoría' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Delete Modal -->
+@if (showDeleteModal && selectedCategory) {
+  <div class="modal-overlay" (click)="closeDeleteModal()">
+    <div class="modal-content modal-sm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Desactivar Categoría</h2>
+        <button class="btn-close" (click)="closeDeleteModal()">
+          <lucide-icon [img]="X" [size]="24"></lucide-icon>
+        </button>
+      </div>
+
+      @if (error) {
+        <div class="alert alert-danger">
+          {{ error }}
+        </div>
+      }
+
+      <div class="modal-body">
+        <p>¿Estás seguro de que deseas desactivar la categoría <strong>{{ selectedCategory.name }}</strong>?</p>
+        <p class="warning-text">⚠️ La categoría no se eliminará, solo se marcará como inactiva. Los productos asociados permanecerán en el sistema.</p>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="closeDeleteModal()">
+          Cancelar
+        </button>
+        <button type="button" class="btn btn-danger" (click)="deleteCategory()" [disabled]="isLoading">
+          {{ isLoading ? 'Desactivando...' : 'Desactivar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

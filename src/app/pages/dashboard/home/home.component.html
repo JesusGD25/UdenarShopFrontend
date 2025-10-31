@@ -1,34 +1,173 @@
-<div class="dashboard-home">
-    <header class="welcome-section">
-        <h1>Bienvenido a UdenarShop</h1>
-        <p class="subtitle">Tu marketplace universitario</p>
-    </header>
+<div class="home-container">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">UdenarShop</h1>
+      <p class="hero-subtitle">Compra y vende entre estudiantes de forma segura</p>
+      
+      <div class="search-bar">
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          (keyup.enter)="onSearch()"
+          placeholder="Buscar productos..."
+          class="search-input"
+        />
+        <button class="search-btn" (click)="onSearch()">
+          Buscar
+        </button>
+      </div>
 
-    <div class="dashboard-stats">
-        <div class="stat-card">
-            <h3>Mis Productos</h3>
-            <p class="stat-number">0</p>
-            <p class="stat-label">productos publicados</p>
-        </div>
-        <div class="stat-card">
-            <h3>Mensajes</h3>
-            <p class="stat-number">0</p>
-            <p class="stat-label">mensajes sin leer</p>
-        </div>
+      <div class="quick-categories">
+        @for (cat of categories.slice(0, 4); track cat.id) {
+          <button class="category-chip" (click)="goToCategory(cat.id)">
+            @if (getLucideIcon(cat.iconUrl)) {
+              <lucide-icon [img]="getLucideIcon(cat.iconUrl)" [size]="20" class="chip-icon"></lucide-icon>
+            } @else if (cat.iconUrl) {
+              <span class="chip-icon">{{ cat.iconUrl }}</span>
+            }
+            <span>{{ cat.name }}</span>
+          </button>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Productos Recientes -->
+  <section class="products-section">
+    <div class="section-header">
+      <h2>Recién publicados</h2>
+      <button class="view-all-btn" (click)="goToExplore()">
+        Ver todos →
+      </button>
     </div>
 
-    <div class="quick-actions">
-        <h2>Acciones Rápidas</h2>
-        <div class="actions-grid">
-            <button class="btn btn-outline" routerLink="/dashboard/create-product">
-                Publicar Nuevo Producto
-            </button>
-            <button class="btn btn-outline" routerLink="/dashboard/products">
-                Ver Productos en Venta
-            </button>
-            <button class="btn btn-outline" routerLink="/dashboard/messages">
-                Ver Mensajes
-            </button>
-        </div>
+    @if (isLoading) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Cargando productos...</p>
+      </div>
+    } @else if (recentProducts.length > 0) {
+      <div class="products-grid">
+        @for (product of recentProducts; track product.id) {
+          <div class="product-card" (click)="viewProduct(product.id)">
+            <div class="product-image">
+              @if (product.images && product.images.length > 0) {
+                <img [src]="product.images[0]" [alt]="product.title" />
+              } @else {
+                <div class="no-image">Sin imagen</div>
+              }
+              @if (product.isSold) {
+                <div class="sold-badge">VENDIDO</div>
+              }
+              <div class="condition-badge">{{ getConditionLabel(product.condition) }}</div>
+            </div>
+
+            <div class="product-info">
+              <h3 class="product-title">{{ product.title }}</h3>
+              @if (product.category) {
+                <p class="product-category">
+                  @if (getLucideIcon(product.category.iconUrl)) {
+                    <lucide-icon [img]="getLucideIcon(product.category.iconUrl)" [size]="16"></lucide-icon>
+                  } @else if (product.category.iconUrl) {
+                    <span>{{ product.category.iconUrl }}</span>
+                  }
+                  {{ product.category.name }}
+                </p>
+              }
+              <p class="product-price">{{ formatPrice(product.price) }}</p>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="empty-state">
+        <p>No hay productos recientes disponibles</p>
+      </div>
+    }
+  </section>
+
+  <!-- Categorías Destacadas -->
+  <section class="categories-section">
+    <div class="section-header">
+      <h2>Explora por categoría</h2>
     </div>
+
+    <div class="categories-grid">
+      @for (category of categories; track category.id) {
+        <div class="category-card" (click)="goToCategory(category.id)">
+          @if (getLucideIcon(category.iconUrl)) {
+            <lucide-icon [img]="getLucideIcon(category.iconUrl)" [size]="48" class="category-icon"></lucide-icon>
+          } @else if (category.iconUrl) {
+            <div class="category-icon">{{ category.iconUrl }}</div>
+          }
+          <h3 class="category-name">{{ category.name }}</h3>
+          @if (category.description) {
+            <p class="category-desc">{{ category.description }}</p>
+          }
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Productos Populares -->
+  <section class="products-section">
+    <div class="section-header">
+      <h2>Productos populares</h2>
+      <button class="view-all-btn" (click)="goToExplore()">
+        Ver todos →
+      </button>
+    </div>
+
+    @if (popularProducts.length > 0) {
+      <div class="products-grid">
+        @for (product of popularProducts; track product.id) {
+          <div class="product-card" (click)="viewProduct(product.id)">
+            <div class="product-image">
+              @if (product.images && product.images.length > 0) {
+                <img [src]="product.images[0]" [alt]="product.title" />
+              } @else {
+                <div class="no-image">Sin imagen</div>
+              }
+              @if (product.isSold) {
+                <div class="sold-badge">VENDIDO</div>
+              }
+              <div class="condition-badge">{{ getConditionLabel(product.condition) }}</div>
+            </div>
+
+            <div class="product-info">
+              <h3 class="product-title">{{ product.title }}</h3>
+              @if (product.category) {
+                <p class="product-category">
+                  @if (getLucideIcon(product.category.iconUrl)) {
+                    <lucide-icon [img]="getLucideIcon(product.category.iconUrl)" [size]="16"></lucide-icon>
+                  } @else if (product.category.iconUrl) {
+                    <span>{{ product.category.iconUrl }}</span>
+                  }
+                  {{ product.category.name }}
+                </p>
+              }
+              <p class="product-price">{{ formatPrice(product.price) }}</p>
+              @if (product.rating > 0) {
+                <div class="product-rating">
+                  {{ product.rating.toFixed(1) }} ⭐
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </section>
+
+  <!-- Call to Action -->
+  <section class="cta-section">
+    <div class="cta-content">
+      <h2>¿Tienes algo que ya no usas?</h2>
+      <p>Publícalo en UdenarShop y dale una segunda vida</p>
+      <button class="cta-button" routerLink="/dashboard/products/add">
+        Publicar producto
+      </button>
+    </div>
+  </section>
 </div>
