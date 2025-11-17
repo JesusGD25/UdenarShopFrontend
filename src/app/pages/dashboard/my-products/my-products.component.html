@@ -41,13 +41,13 @@
                     <app-product-card [product]="product"></app-product-card>
                     <div class="product-actions">
                         <button 
-                            class="btn btn-sm btn-edit" 
+                            class="btn btn-sm btn-outline text-info" 
                             (click)="editProduct(product.id)"
                             title="Editar producto">
                             ✏️ Editar
                         </button>
                         <button 
-                            class="btn btn-sm btn-delete" 
+                            class="btn btn-sm btn-outline text-danger" 
                             (click)="deleteProduct(product.id)"
                             title="Eliminar producto">
                             🗑️ Eliminar

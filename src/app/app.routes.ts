@@ -9,6 +9,7 @@ import { HomeComponent } from './pages/dashboard/home/home.component';
 import { MyProductsComponent } from './pages/dashboard/my-products/my-products.component';
 import { CategoriesComponent } from './pages/dashboard/categories/categories.component';
 import { SearchComponent } from './pages/search/search.component';
+import { MyCartComponent } from './pages/dashboard/my-cart/my-cart.component';
 import { authGuard } from './guards/auth.guard';
 import { loginGuard } from './guards/login.guard';
 
@@ -67,6 +68,10 @@ export const routes: Routes = [
       { 
         path: 'categories', 
         component: CategoriesComponent 
+      },
+      { 
+        path: 'cart', 
+        component: MyCartComponent 
       }
     ] 
   },
