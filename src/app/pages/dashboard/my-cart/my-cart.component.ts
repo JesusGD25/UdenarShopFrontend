@@ -4,19 +4,21 @@ import { RouterLink } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { CartService } from '../../../core/services/cart.service';
 import { Cart, CartItem } from '../../../core/models/cart.model';
+import { CheckoutComponent } from '../checkout/checkout.component';
 
 @Component({
   selector: 'app-my-cart',
   standalone: true,
   templateUrl: './my-cart.component.html',
   styleUrls: ['./my-cart.component.scss'],
-  imports: [CommonModule, DecimalPipe, RouterLink]
+  imports: [CommonModule, DecimalPipe, RouterLink, CheckoutComponent]
 })
 export class MyCartComponent implements OnInit, OnDestroy {
   cart: Cart | null = null;
   isLoading = false;
   error: string | null = null;
   private destroy$ = new Subject<void>();
+  showCheckout = false;
 
   constructor(private cartService: CartService) {}
 
@@ -155,8 +157,21 @@ export class MyCartComponent implements OnInit, OnDestroy {
       alert('El carrito está vacío');
       return;
     }
+    this.showCheckout = true;
+  }
+
+  cerrarCheckout(): void {
+    this.showCheckout = false;
+  }
+
+  procesarPago(paymentData: any): void {
+    console.log('Procesando pago:', paymentData);
     
-    // Aquí irá la navegación al checkout
-    alert(`Total a pagar: $${this.total.toFixed(2)}\n\nFuncionalidad de checkout en desarrollo`);
+    // Aquí puedes agregar la lógica para enviar la orden al backend
+    alert('¡Pago procesado exitosamente! ✅\n\nGracias por tu compra.');
+    
+    // Vaciar el carrito después del pago
+    this.vaciarCarrito();
+    this.showCheckout = false;
   }
 }

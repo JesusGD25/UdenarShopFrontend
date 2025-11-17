@@ -14,7 +14,8 @@ import {
   LogOut,
   Search,
   TrendingUp,
-  FolderOpen
+  FolderOpen,
+  ShoppingBag
 } from 'lucide-angular';
 import { AuthService } from '../../services/auth.service';
 
@@ -51,6 +52,7 @@ export class SidebarComponent implements OnInit {
   readonly Search = Search;
   readonly TrendingUp = TrendingUp;
   readonly FolderOpen = FolderOpen;
+  readonly ShoppingBag = ShoppingBag;
 
   menuSections: MenuSection[] = [];
   isAdmin = false;
@@ -86,7 +88,8 @@ export class SidebarComponent implements OnInit {
         items: [
           { label: 'Mensajes', route: '/dashboard/messages', icon: this.MessageSquare },
           { label: 'Favoritos', route: '/dashboard/favorites', icon: this.Heart },
-          { label: 'Mi Carrito', route: '/dashboard/cart', icon: this.ShoppingCart }
+          { label: 'Mi Carrito', route: '/dashboard/cart', icon: this.ShoppingCart },
+          { label: 'Mis Órdenes', route: '/dashboard/my-orders', icon: this.ShoppingBag }
         ]
       }
     ];

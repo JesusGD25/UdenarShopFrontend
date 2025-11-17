@@ -87,3 +87,12 @@
     <button class="shop-btn" routerLink="/">Ir a comprar</button>
   </div>
 </div>
+
+<!-- Checkout Component -->
+<app-checkout
+  *ngIf="showCheckout"
+  [cartItems]="cartItems"
+  [total]="total"
+  (closeCheckout)="cerrarCheckout()"
+  (confirmPayment)="procesarPago($event)"
+></app-checkout>
