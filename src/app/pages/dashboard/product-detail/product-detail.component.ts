@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService, Product, ProductCondition } from '../../../services/product.service';
 import { CategoryService, Category } from '../../../services/category.service';
 import { AuthService } from '../../../services/auth.service';
+import { CartService } from '../../../core/services/cart.service';
+import { Subject, takeUntil } from 'rxjs';
 import { 
   LucideAngularModule, 
   ArrowLeft, 
@@ -27,7 +29,7 @@ import {
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss'
 })
-export class ProductDetailComponent implements OnInit {
+export class ProductDetailComponent implements OnInit, OnDestroy {
   // Icons
   readonly ArrowLeft = ArrowLeft;
   readonly Edit = Edit;
@@ -49,6 +51,10 @@ export class ProductDetailComponent implements OnInit {
   currentImageIndex = 0;
   showDeleteModal = false;
   isDeleting = false;
+  
+  // Agregar propiedades para el carrito
+  isAddingToCart = false;
+  private destroy$ = new Subject<void>();
 
   // User info
   currentUserId: string | null = null;
@@ -60,7 +66,8 @@ export class ProductDetailComponent implements OnInit {
     private router: Router,
     private productService: ProductService,
     private categoryService: CategoryService,
-    private authService: AuthService
+    private authService: AuthService,
+    private cartService: CartService
   ) {}
 
   ngOnInit(): void {
@@ -83,6 +90,11 @@ export class ProductDetailComponent implements OnInit {
         this.router.navigate(['/dashboard/products']);
       }, 2000);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   /**
@@ -259,12 +271,70 @@ export class ProductDetailComponent implements OnInit {
   }
 
   /**
-   * Agregar al carrito (placeholder)
+   * Agregar al carrito
    */
   addToCart(): void {
-    // TODO: Implementar lógica del carrito
-    console.log('Agregar al carrito:', this.product?.id);
-    alert('Funcionalidad del carrito próximamente');
+    if (!this.product) return;
+
+    // Validar que el producto esté disponible
+    if (this.product.isSold) {
+      alert('❌ Este producto ya está vendido');
+      return;
+    }
+
+    if (!this.product.isActive) {
+      alert('❌ Este producto no está disponible');
+      return;
+    }
+
+    if (this.product.stock <= 0) {
+      alert('❌ Producto sin stock disponible');
+      return;
+    }
+
+    // Agregar al carrito
+    this.isAddingToCart = true;
+    this.error = null;
+
+    this.cartService.addToCart({
+      productId: this.product.id,
+      quantity: 1
+    })
+    .pipe(takeUntil(this.destroy$))
+    .subscribe({
+      next: (cart) => {
+        this.isAddingToCart = false;
+        alert('✅ Producto agregado al carrito correctamente');
+        
+        // Opcional: Preguntar si quiere ir al carrito
+        const goToCart = confirm('¿Deseas ir al carrito ahora?');
+        if (goToCart) {
+          this.router.navigate(['/dashboard/cart']); // Cambiar a /dashboard/cart
+        }
+      },
+      error: (err) => {
+        console.error('Error adding to cart:', err);
+        this.isAddingToCart = false;
+        
+        // Manejar errores específicos del backend
+        let errorMessage = 'Error al agregar el producto al carrito';
+        
+        if (err.error?.message) {
+          errorMessage = err.error.message;
+        } else if (err.status === 400) {
+          errorMessage = 'No se puede agregar este producto al carrito';
+        } else if (err.status === 404) {
+          errorMessage = 'Producto no encontrado';
+        } else if (err.status === 401) {
+          errorMessage = 'Debes iniciar sesión para agregar productos al carrito';
+          setTimeout(() => {
+            this.router.navigate(['/auth/login']);
+          }, 2000);
+        }
+        
+        alert(`❌ ${errorMessage}`);
+      }
+    });
   }
 
   /**

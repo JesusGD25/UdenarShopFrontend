@@ -92,20 +92,7 @@ export class AuthService {
    * Obtiene el token JWT
    */
   getToken(): string | null {
-    const token = localStorage.getItem(this.tokenKey);
-    
-    if (!token) {
-      return null;
-    }
-    
-    // Verificar si el token existe y no está expirado
-    if (this.isTokenExpired(token)) {
-      console.warn('Token expirado, cerrando sesión...');
-      this.clearAuthData();
-      return null;
-    }
-    
-    return token;
+    return localStorage.getItem(this.tokenKey);
   }
 
   /**

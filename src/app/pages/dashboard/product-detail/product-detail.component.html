@@ -108,9 +108,25 @@
         <!-- Botones de acción -->
         <div class="action-buttons">
           @if (!isOwner) {
-            <button class="btn btn-primary btn-lg" (click)="addToCart()">
+            <button 
+              class="btn btn-primary btn-lg" 
+              (click)="addToCart()"
+              [disabled]="isAddingToCart || product.isSold || !product.isActive || product.stock <= 0"
+            >
               <lucide-icon [img]="ShoppingCart" [size]="20"></lucide-icon>
-              <span>Agregar al Carrito</span>
+              <span>
+                @if (isAddingToCart) {
+                  Agregando...
+                } @else if (product.isSold) {
+                  Vendido
+                } @else if (!product.isActive) {
+                  No Disponible
+                } @else if (product.stock <= 0) {
+                  Sin Stock
+                } @else {
+                  Agregar al Carrito
+                }
+              </span>
             </button>
             <button class="btn btn-accent btn-lg" (click)="contactSeller()">
               <lucide-icon [img]="MessageSquare" [size]="20"></lucide-icon>

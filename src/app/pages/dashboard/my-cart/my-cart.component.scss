@@ -220,6 +220,84 @@
   }
 }
 
+.loading-state {
+  text-align: center;
+  padding: 4rem 2rem;
+
+  .spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #667eea;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+  }
+
+  p {
+    color: #666;
+    font-size: 1.1rem;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-state {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: #fee;
+  border-radius: 8px;
+  margin: 2rem 0;
+
+  p {
+    color: #c00;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+
+  .retry-btn {
+    padding: 0.75rem 2rem;
+    background: #e74c3c;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+
+    &:hover {
+      background: #c0392b;
+    }
+  }
+}
+
+.item-description {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0.25rem 0;
+}
+
+.item-stock {
+  font-size: 0.85rem;
+  color: #e74c3c;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+.item-subtotal {
+  font-size: 0.95rem;
+  color: #555;
+  font-weight: 600;
+  margin: 0.5rem 0;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 @media (max-width: 768px) {
   .cart-container {
     padding: 1rem;
