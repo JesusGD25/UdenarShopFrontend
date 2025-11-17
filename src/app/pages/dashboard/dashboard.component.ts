@@ -54,4 +54,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   isAdmin(): boolean {
     return this.authService.isAdmin();
   }
+
+  hasMainOutlet(): boolean {
+    // Usar una verificación diferente o eliminar este método si no es necesario
+    return this.router.url.includes('/dashboard');
+  }
 }

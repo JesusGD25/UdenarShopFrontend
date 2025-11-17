@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CartItem } from '../../../core/models/cart.model';
 import { OrderService } from '../../../core/services/order.service';
-import { PaymentMethod } from '../../../core/models/order.model';
+import { CreateOrderDto, ProcessPaymentDto, PaymentMethod } from '../../../core/models/order.model';
 
 @Component({
   selector: 'app-checkout',
@@ -36,12 +36,15 @@ export class CheckoutComponent {
   constructor(private orderService: OrderService) {}
 
   onCancel(): void {
+    console.log('Cancelando checkout');
     if (!this.isProcessing) {
       this.closeCheckout.emit();
     }
   }
 
   async onSubmit(): Promise<void> {
+    console.log('Iniciando proceso de pago');
+    
     if (!this.validateForm()) {
       return;
     }
@@ -50,40 +53,33 @@ export class CheckoutComponent {
     this.errorMessage = '';
 
     try {
-      // 1. Crear la orden
-      const shippingAddress = `${this.paymentData.address}, ${this.paymentData.city}${this.paymentData.postalCode ? ', ' + this.paymentData.postalCode : ''}`;
-      
-      const order = await this.orderService.createOrder({
-        paymentMethod: PaymentMethod.CARD,
-        shippingAddress,
-        notes: this.paymentData.notes
-      }).toPromise();
+      // Simular proceso de pago sin llamar al servicio real
+      console.log('Procesando pago con datos:', this.paymentData);
+      console.log('Items del carrito:', this.cartItems);
+      console.log('Total:', this.total);
 
-      if (!order) {
-        throw new Error('Error al crear la orden');
-      }
+      // Simular delay de procesamiento
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
-      // 2. Procesar el pago
-      const paidOrder = await this.orderService.processPayment(order.id, {
-        paymentMethod: PaymentMethod.CARD,
-        cardNumber: this.paymentData.cardNumber,
-        cvv: this.paymentData.cvv,
-        expiryDate: this.paymentData.expiryDate
-      }).toPromise();
+      // Emitir evento de pago confirmado
+      const paymentResult = {
+        orderId: Date.now(), // Simular ID de orden
+        cardNumber: '****' + this.paymentData.cardNumber.slice(-4),
+        amount: this.total,
+        timestamp: new Date(),
+        shippingAddress: {
+          address: this.paymentData.address,
+          city: this.paymentData.city,
+          postalCode: this.paymentData.postalCode
+        }
+      };
 
-      // 3. Emitir evento de éxito
-      this.confirmPayment.emit({
-        order: paidOrder,
-        timestamp: new Date()
-      });
-
-      alert(`¡Pago exitoso! Número de orden: ${paidOrder?.orderNumber}`);
-      this.closeCheckout.emit();
+      console.log('Pago procesado exitosamente:', paymentResult);
+      this.confirmPayment.emit(paymentResult);
 
     } catch (error: any) {
       console.error('Error en el proceso de pago:', error);
-      this.errorMessage = error.error?.message || 'Error al procesar el pago. Por favor, intenta nuevamente.';
-      alert(this.errorMessage);
+      this.errorMessage = 'Error al procesar el pago. Por favor, intenta nuevamente.';
     } finally {
       this.isProcessing = false;
     }
@@ -92,48 +88,44 @@ export class CheckoutComponent {
   validateForm(): boolean {
     const { cardNumber, cardHolder, expiryDate, cvv, email, address, city } = this.paymentData;
     
-    if (!cardNumber || cardNumber.length < 16) {
-      this.errorMessage = 'Número de tarjeta inválido';
-      alert(this.errorMessage);
+    console.log('Validando formulario:', this.paymentData);
+
+    if (!cardNumber || cardNumber.replace(/\s/g, '').length < 13) {
+      this.errorMessage = 'Número de tarjeta inválido (mínimo 13 dígitos)';
       return false;
     }
     
-    if (!cardHolder || cardHolder.trim().length < 3) {
+    if (!cardHolder || cardHolder.trim().length < 2) {
       this.errorMessage = 'Nombre del titular inválido';
-      alert(this.errorMessage);
       return false;
     }
     
     if (!expiryDate || !/^\d{2}\/\d{2}$/.test(expiryDate)) {
       this.errorMessage = 'Fecha de expiración inválida (MM/YY)';
-      alert(this.errorMessage);
       return false;
     }
     
     if (!cvv || cvv.length < 3) {
       this.errorMessage = 'CVV inválido';
-      alert(this.errorMessage);
       return false;
     }
     
     if (!email || !email.includes('@')) {
       this.errorMessage = 'Email inválido';
-      alert(this.errorMessage);
       return false;
     }
 
     if (!address || address.trim().length < 5) {
       this.errorMessage = 'Dirección inválida';
-      alert(this.errorMessage);
       return false;
     }
 
     if (!city || city.trim().length < 2) {
       this.errorMessage = 'Ciudad inválida';
-      alert(this.errorMessage);
       return false;
     }
     
+    console.log('Formulario válido');
     return true;
   }
 

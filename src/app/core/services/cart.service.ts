@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, tap, catchError } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Cart, AddToCartDto, UpdateCartItemDto } from '../models/cart.model';
+import { Cart, AddToCartDto, UpdateCartItemDto, CartItem } from '../models/cart.model';
 
 @Injectable({
   providedIn: 'root'
@@ -97,5 +97,12 @@ export class CartService {
     const cart = this.cartSubject.value;
     if (!cart || !cart.items) return 0;
     return cart.items.reduce((sum, item) => sum + item.quantity, 0);
+  }
+
+  /**
+   * Obtener la cantidad total de items en el carrito
+   */
+  getTotalQuantity(cart: Cart): number {
+    return cart.items.reduce((sum: number, item: CartItem) => sum + item.quantity, 0);
   }
 }

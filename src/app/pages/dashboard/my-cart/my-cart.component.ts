@@ -54,33 +54,43 @@ export class MyCartComponent implements OnInit, OnDestroy {
     return this.cart?.items || [];
   }
 
-  get total(): number {
-    if (!this.cart || !this.cart.items) return 0;
-    return this.cart.items.reduce((sum, item) => 
-      sum + (parseFloat(item.product.price) * item.quantity), 0
-    );
+  getTotalPrice(): number {
+    return this.cart ? this.cart.items.reduce((sum: number, item: CartItem) =>
+      sum + (item.product.price * item.quantity), 0
+    ) : 0;
   }
 
+  getItemSubtotal(item: CartItem): number {
+    return item.product.price * item.quantity;
+  }
+
+  // Alias para compatibilidad con el template
   getSubtotal(item: CartItem): number {
-    return parseFloat(item.product.price) * item.quantity;
+    return this.getItemSubtotal(item);
   }
 
-  getPrice(priceString: string): number {
-    return parseFloat(priceString);
+  // Getter para el total
+  get total(): number {
+    return this.getTotalPrice();
   }
 
-  actualizarCantidad(itemId: string, cambio: number): void {
+  getPrice(priceValue: number): number {
+    return priceValue;
+  }
+
+  // Método para actualizar cantidad (alias)
+  actualizarCantidad(itemId: number, change: number): void {
     const item = this.cartItems.find(i => i.id === itemId);
-    if (!item) return;
-
-    const newQuantity = item.quantity + cambio;
-
-    if (newQuantity <= 0) {
-      this.eliminarItem(itemId);
-      return;
+    if (item) {
+      const newQuantity = item.quantity + change;
+      this.updateQuantity(item, newQuantity);
     }
+  }
 
-    if (newQuantity > item.product.stock) {
+  updateQuantity(item: CartItem, newQuantity: number): void {
+    if (newQuantity < 1) return;
+    
+    if (item.product.stock && newQuantity > item.product.stock) {
       alert(`Stock máximo disponible: ${item.product.stock}`);
       return;
     }
@@ -88,7 +98,7 @@ export class MyCartComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.error = null;
     
-    this.cartService.updateCartItem(itemId, { quantity: newQuantity })
+    this.cartService.updateCartItem(item.id.toString(), { quantity: newQuantity })
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (cart) => {
@@ -104,7 +114,7 @@ export class MyCartComponent implements OnInit, OnDestroy {
       });
   }
 
-  eliminarItem(itemId: string): void {
+  eliminarItem(itemId: number): void {
     if (!confirm('¿Estás seguro de eliminar este producto del carrito?')) {
       return;
     }
@@ -112,7 +122,7 @@ export class MyCartComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.error = null;
     
-    this.cartService.removeCartItem(itemId)
+    this.cartService.removeCartItem(itemId.toString())
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (cart) => {
@@ -153,25 +163,49 @@ export class MyCartComponent implements OnInit, OnDestroy {
   }
 
   finalizarCompra(): void {
-    if (this.cartItems.length === 0) {
+    console.log('=== INICIANDO PROCESO DE COMPRA ===');
+    console.log('Cart items:', this.cartItems);
+    console.log('Total:', this.total);
+    console.log('Show checkout before:', this.showCheckout);
+    
+    if (!this.cart || this.cartItems.length === 0) {
       alert('El carrito está vacío');
       return;
     }
+    
+    if (this.isLoading) {
+      alert('Espera a que termine la operación actual');
+      return;
+    }
+    
     this.showCheckout = true;
+    console.log('Show checkout after:', this.showCheckout);
   }
 
   cerrarCheckout(): void {
+    console.log('=== CERRANDO CHECKOUT ===');
     this.showCheckout = false;
   }
 
   procesarPago(paymentData: any): void {
-    console.log('Procesando pago:', paymentData);
+    console.log('=== PROCESANDO PAGO ===');
+    console.log('Payment data recibida:', paymentData);
     
-    // Aquí puedes agregar la lógica para enviar la orden al backend
-    alert('¡Pago procesado exitosamente! ✅\n\nGracias por tu compra.');
+    // Mostrar mensaje de éxito
+    alert(`¡Pago procesado exitosamente! ✅
     
-    // Vaciar el carrito después del pago
-    this.vaciarCarrito();
+Número de orden: ${paymentData.orderId}
+Total pagado: $${paymentData.amount}
+Tarjeta: ${paymentData.cardNumber}
+
+¡Gracias por tu compra!`);
+    
+    // Cerrar checkout primero
     this.showCheckout = false;
+    
+    // Luego vaciar el carrito
+    setTimeout(() => {
+      this.vaciarCarrito();
+    }, 500);
   }
 }

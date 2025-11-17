@@ -29,7 +29,7 @@
         <div class="item-name">{{item.product.title}}</div>
         <div class="item-description">{{item.product.description}}</div>
         <div class="item-price">${{getPrice(item.product.price) | number:'1.0-0'}}</div>
-        <div class="item-stock" *ngIf="item.product.stock <= 5">
+        <div class="item-stock" *ngIf="item.product.stock != null && item.product.stock <= 5">
           ⚠️ Solo quedan {{item.product.stock}} unidades
         </div>
       </div>
@@ -45,7 +45,7 @@
           <button 
             (click)="actualizarCantidad(item.id, 1)" 
             title="Aumentar cantidad"
-            [disabled]="isLoading || item.quantity >= item.product.stock"
+            [disabled]="isLoading || (item.product.stock != null && item.quantity >= item.product.stock)"
           >+</button>
         </div>
         

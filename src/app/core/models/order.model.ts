@@ -1,49 +1,75 @@
 export enum OrderStatus {
-  PENDING = 'pending',
-  PAID = 'paid',
-  CANCELLED = 'cancelled',
-  SHIPPED = 'shipped',
-  DELIVERED = 'delivered'
+  PENDING = 'PENDING',
+  PROCESSING = 'PROCESSING', 
+  SHIPPED = 'SHIPPED',
+  DELIVERED = 'DELIVERED',
+  CANCELLED = 'CANCELLED',
+  COMPLETED = 'COMPLETED'
+}
+
+export enum PaymentStatus {
+  PENDING = 'PENDING',
+  PROCESSING = 'PROCESSING',
+  COMPLETED = 'COMPLETED',
+  FAILED = 'FAILED',
+  REFUNDED = 'REFUNDED'
 }
 
 export enum PaymentMethod {
-  CASH = 'cash',
-  CARD = 'card',
-  TRANSFER = 'transfer'
+  CARD = 'CARD',
+  PAYPAL = 'PAYPAL',
+  BANK_TRANSFER = 'BANK_TRANSFER'
 }
 
 export interface CreateOrderDto {
-  paymentMethod: PaymentMethod;
-  shippingAddress: string;
-  notes?: string;
+  cartId: number;
+  shippingAddress: {
+    street: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+  };
+  paymentMethod: string;
 }
 
 export interface ProcessPaymentDto {
-  paymentMethod: PaymentMethod;
-  cardNumber?: string;
-  cvv?: string;
-  expiryDate?: string;
-}
-
-export interface OrderItem {
-  id: string;
-  productId: string;
-  productTitle: string;
-  quantity: number;
-  price: number;
-  sellerId: string;
+  orderId: string;
+  paymentMethodId: string;
+  amount: number;
 }
 
 export interface Order {
   id: string;
-  orderNumber: string;
-  totalAmount: number;
-  status: OrderStatus;
-  paymentMethod: PaymentMethod;
-  shippingAddress: string;
-  notes?: string;
-  createdAt: Date;
-  updatedAt: Date;
-  buyerId: string;
+  userId: string;
   items: OrderItem[];
+  status: OrderStatus;
+  paymentStatus: PaymentStatus;
+  paymentMethod: PaymentMethod;
+  totalAmount: number;
+  shippingAddress: ShippingAddress;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface OrderItem {
+  id: string;
+  orderId: string;
+  productId: string;
+  quantity: number;
+  price: number;
+  product: {
+    id: string;
+    title: string;
+    images: string[];
+  };
+}
+
+export interface ShippingAddress {
+  street: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
 }

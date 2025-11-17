@@ -1,28 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { OrderService } from '../../../core/services/order.service';
-import { Order, OrderStatus } from '../../../core/models/order.model';
-import { LucideAngularModule, Package, Clock, CheckCircle, XCircle, Truck, PackageCheck } from 'lucide-angular';
+import { Order, OrderStatus, PaymentMethod } from '../../../core/models/order.model';
 
 @Component({
   selector: 'app-my-orders',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './my-orders.component.html',
   styleUrls: ['./my-orders.component.scss']
 })
 export class MyOrdersComponent implements OnInit {
-  readonly Package = Package;
-  readonly Clock = Clock;
-  readonly CheckCircle = CheckCircle;
-  readonly XCircle = XCircle;
-  readonly Truck = Truck;
-  readonly PackageCheck = PackageCheck;
-
   orders: Order[] = [];
   isLoading = false;
   errorMessage = '';
   OrderStatus = OrderStatus;
+  PaymentMethod = PaymentMethod;
 
   constructor(private orderService: OrderService) {}
 
@@ -47,55 +41,96 @@ export class MyOrdersComponent implements OnInit {
     });
   }
 
-  getStatusIcon(status: OrderStatus): any {
+  formatDate(dateString: string): string {
+    return new Date(dateString).toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  getStatusColor(status: OrderStatus): string {
     switch (status) {
       case OrderStatus.PENDING:
-        return this.Clock;
-      case OrderStatus.PAID:
-        return this.CheckCircle;
+        return '#ff9500';
+      case OrderStatus.PROCESSING:
+        return '#007bff';
       case OrderStatus.SHIPPED:
-        return this.Truck;
+        return '#6f42c1';
       case OrderStatus.DELIVERED:
-        return this.PackageCheck;
+        return '#28a745';
+      case OrderStatus.COMPLETED:
+        return '#28a745';
       case OrderStatus.CANCELLED:
-        return this.XCircle;
+        return '#dc3545';
       default:
-        return this.Package;
+        return '#6c757d';
     }
   }
 
-  getStatusClass(status: OrderStatus): string {
+  getStatusIcon(status: OrderStatus): string {
     switch (status) {
       case OrderStatus.PENDING:
-        return 'status-pending';
-      case OrderStatus.PAID:
-        return 'status-paid';
+        return '⏳';
+      case OrderStatus.PROCESSING:
+        return '⚙️';
       case OrderStatus.SHIPPED:
-        return 'status-shipped';
+        return '🚚';
       case OrderStatus.DELIVERED:
-        return 'status-delivered';
+        return '📦';
+      case OrderStatus.COMPLETED:
+        return '✅';
       case OrderStatus.CANCELLED:
-        return 'status-cancelled';
+        return '❌';
       default:
-        return '';
+        return '📋';
     }
   }
 
   getStatusText(status: OrderStatus): string {
-    switch (status) {
-      case OrderStatus.PENDING:
-        return 'Pendiente';
-      case OrderStatus.PAID:
-        return 'Pagada';
-      case OrderStatus.SHIPPED:
-        return 'Enviada';
-      case OrderStatus.DELIVERED:
-        return 'Entregada';
-      case OrderStatus.CANCELLED:
-        return 'Cancelada';
-      default:
-        return status;
+    const statusTexts: Record<OrderStatus, string> = {
+      [OrderStatus.PENDING]: 'Pendiente',
+      [OrderStatus.PROCESSING]: 'Procesando',
+      [OrderStatus.SHIPPED]: 'Enviada',
+      [OrderStatus.DELIVERED]: 'Entregada',
+      [OrderStatus.COMPLETED]: 'Completada',
+      [OrderStatus.CANCELLED]: 'Cancelada'
+    };
+    
+    return statusTexts[status] || status;
+  }
+
+  canCancelOrder(order: Order): boolean {
+    return order.status === OrderStatus.PENDING || order.status === OrderStatus.PROCESSING;
+  }
+
+  getShippingAddressText(shippingAddress: any): string {
+    if (typeof shippingAddress === 'string') {
+      return shippingAddress;
     }
+
+    if (typeof shippingAddress === 'object') {
+      const { street, city, state, zipCode, country } = shippingAddress;
+      return `${street}, ${city}${state ? ', ' + state : ''}${zipCode ? ', ' + zipCode : ''}${country ? ', ' + country : ''}`;
+    }
+
+    return 'Dirección no especificada';
+  }
+
+  getTotalItems(order: Order): number {
+    return order.items.reduce((total, item) => total + item.quantity, 0);
+  }
+
+  getPaymentMethodText(paymentMethod: PaymentMethod): string {
+    const paymentMethodTexts: Record<PaymentMethod, string> = {
+      [PaymentMethod.CARD]: 'Tarjeta de Crédito',
+      [PaymentMethod.PAYPAL]: 'PayPal',
+      [PaymentMethod.BANK_TRANSFER]: 'Transferencia Bancaria'
+    };
+
+    return paymentMethodTexts[paymentMethod] || paymentMethod;
   }
 
   cancelOrder(orderId: string): void {
@@ -103,36 +138,17 @@ export class MyOrdersComponent implements OnInit {
       return;
     }
 
+    this.isLoading = true;
     this.orderService.cancelOrder(orderId).subscribe({
-      next: (updatedOrder) => {
-        const index = this.orders.findIndex(o => o.id === orderId);
-        if (index !== -1) {
-          this.orders[index] = updatedOrder;
-        }
+      next: () => {
         alert('Orden cancelada exitosamente');
+        this.loadOrders(); // Recargar las órdenes
       },
       error: (error) => {
-        console.error('Error al cancelar orden:', error);
-        alert(error.error?.message || 'Error al cancelar la orden');
+        console.error('Error canceling order:', error);
+        alert('Error al cancelar la orden');
+        this.isLoading = false;
       }
-    });
-  }
-
-  canCancelOrder(order: Order): boolean {
-    return order.status === OrderStatus.PENDING || order.status === OrderStatus.PAID;
-  }
-
-  getTotalItems(order: Order): number {
-    return order.items.reduce((sum, item) => sum + item.quantity, 0);
-  }
-
-  formatDate(date: Date): string {
-    return new Date(date).toLocaleDateString('es-CO', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
     });
   }
 }

@@ -86,8 +86,6 @@ export class SidebarComponent implements OnInit {
       {
         title: 'Actividad',
         items: [
-          { label: 'Mensajes', route: '/dashboard/messages', icon: this.MessageSquare },
-          { label: 'Favoritos', route: '/dashboard/favorites', icon: this.Heart },
           { label: 'Mi Carrito', route: '/dashboard/cart', icon: this.ShoppingCart },
           { label: 'Mis Órdenes', route: '/dashboard/my-orders', icon: this.ShoppingBag }
         ]

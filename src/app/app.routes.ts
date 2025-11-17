@@ -12,6 +12,7 @@ import { SearchComponent } from './pages/search/search.component';
 import { MyCartComponent } from './pages/dashboard/my-cart/my-cart.component';
 import { authGuard } from './guards/auth.guard';
 import { loginGuard } from './guards/login.guard';
+import { MyOrdersComponent } from './pages/dashboard/my-orders/my-orders.component';
 
 export const routes: Routes = [
   // Ruta por defecto: dashboard
@@ -66,12 +67,20 @@ export const routes: Routes = [
         component: MyProductsComponent 
       },
       { 
+        path: 'my-orders', 
+        component: MyOrdersComponent
+      },
+      { 
         path: 'categories', 
         component: CategoriesComponent 
       },
       { 
         path: 'cart', 
         component: MyCartComponent 
+      },
+      { 
+        path: 'profile', 
+        loadComponent: () => import('./pages/dashboard/profile/profile.component').then(m => m.ProfileComponent)
       }
     ] 
   },

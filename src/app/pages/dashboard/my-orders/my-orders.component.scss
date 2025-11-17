@@ -181,13 +181,22 @@
 
 .order-items {
   margin-bottom: 16px;
+
+  .items-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+    margin: 0 0 12px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
 }
 
 .order-item {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 10px 0;
+  align-items: flex-start;
+  padding: 12px 0;
   border-bottom: 1px solid #f0f0f0;
 
   &:last-child {
@@ -196,23 +205,34 @@
 
   .item-info {
     display: flex;
-    align-items: center;
-    gap: 10px;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
 
     .item-title {
       color: #333;
       font-size: 15px;
+      font-weight: 600;
     }
 
-    .item-quantity {
+    .item-details {
+      display: flex;
+      gap: 16px;
+      font-size: 13px;
       color: #666;
-      font-size: 14px;
+
+      .item-quantity {
+        font-weight: 500;
+      }
     }
   }
 
-  .item-price {
+  .item-total-price {
     color: #28a745;
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 16px;
+    white-space: nowrap;
+    margin-left: 16px;
   }
 }
 
@@ -273,14 +293,35 @@
 
 .shipping-info {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 12px;
-  padding: 10px;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 16px;
+  padding: 12px;
   background-color: #f8f9fa;
   border-radius: 6px;
-  font-size: 14px;
-  color: #555;
+  border-left: 3px solid #007bff;
+
+  lucide-icon {
+    color: #007bff;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .shipping-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 14px;
+
+    strong {
+      color: #333;
+      font-size: 13px;
+    }
+
+    span {
+      color: #555;
+    }
+  }
 }
 
 .order-notes {
@@ -333,6 +374,31 @@
 
     .btn-cancel-order {
       width: 100%;
+    }
+  }
+
+  .order-item {
+    flex-direction: column;
+    gap: 8px;
+
+    .item-info {
+      width: 100%;
+
+      .item-details {
+        flex-direction: column;
+        gap: 4px;
+      }
+    }
+
+    .item-total-price {
+      align-self: flex-end;
+      margin-left: 0;
+    }
+  }
+
+  .shipping-info {
+    .shipping-details {
+      font-size: 13px;
     }
   }
 }

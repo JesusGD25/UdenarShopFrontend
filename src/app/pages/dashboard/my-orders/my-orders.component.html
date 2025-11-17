@@ -12,14 +12,14 @@
 
   <!-- Error State -->
   <div *ngIf="errorMessage && !isLoading" class="error-state">
-    <lucide-icon [img]="XCircle" [size]="48"></lucide-icon>
+    <span class="error-icon">❌</span>
     <p>{{ errorMessage }}</p>
     <button class="btn-retry" (click)="loadOrders()">Reintentar</button>
   </div>
 
   <!-- Empty State -->
   <div *ngIf="!isLoading && !errorMessage && orders.length === 0" class="empty-state">
-    <lucide-icon [img]="Package" [size]="64"></lucide-icon>
+    <span class="empty-icon">📦</span>
     <h3>No tienes órdenes aún</h3>
     <p>Explora productos y realiza tu primera compra</p>
     <a routerLink="/dashboard/explore" class="btn-explore">Explorar Productos</a>
@@ -31,23 +31,27 @@
       <!-- Order Header -->
       <div class="order-header">
         <div class="order-info">
-          <h3>{{ order.orderNumber }}</h3>
+          <h3>Orden {{ order.id }}</h3>
           <span class="order-date">{{ formatDate(order.createdAt) }}</span>
         </div>
-        <div class="order-status" [ngClass]="getStatusClass(order.status)">
-          <lucide-icon [img]="getStatusIcon(order.status)" [size]="20"></lucide-icon>
+        <div class="order-status" [style.color]="getStatusColor(order.status)">
+          <span class="status-icon">{{ getStatusIcon(order.status) }}</span>
           <span>{{ getStatusText(order.status) }}</span>
         </div>
       </div>
 
       <!-- Order Items -->
       <div class="order-items">
+        <h4 class="items-title">Productos</h4>
         <div *ngFor="let item of order.items" class="order-item">
           <div class="item-info">
-            <span class="item-title">{{ item.productTitle }}</span>
-            <span class="item-quantity">x{{ item.quantity }}</span>
+            <span class="item-title">{{ item.product.title }}</span>
+            <span class="item-details">
+              <span class="item-quantity">Cantidad: {{ item.quantity }}</span>
+              <span class="item-unit-price">Precio unitario: ${{ item.price | number:'1.0-0' }}</span>
+            </span>
           </div>
-          <span class="item-price">${{ item.price * item.quantity | number:'1.0-0' }}</span>
+          <span class="item-total-price">${{ (item.price * item.quantity) | number:'1.0-0' }}</span>
         </div>
       </div>
 
@@ -55,16 +59,16 @@
       <div class="order-footer">
         <div class="order-details">
           <div class="detail-item">
-            <span class="label">Total:</span>
+            <span class="label">Total de la Orden:</span>
             <span class="value total-amount">${{ order.totalAmount | number:'1.0-0' }}</span>
           </div>
           <div class="detail-item">
-            <span class="label">Items:</span>
+            <span class="label">Total de Items:</span>
             <span class="value">{{ getTotalItems(order) }}</span>
           </div>
           <div class="detail-item">
-            <span class="label">Método de pago:</span>
-            <span class="value">{{ order.paymentMethod }}</span>
+            <span class="label">Método de Pago:</span>
+            <span class="value">{{ getPaymentMethodText(order.paymentMethod) }}</span>
           </div>
         </div>
         
@@ -80,9 +84,12 @@
       </div>
 
       <!-- Shipping Address -->
-      <div class="shipping-info" *ngIf="order.shippingAddress">
-        <lucide-icon [img]="Truck" [size]="16"></lucide-icon>
-        <span>{{ order.shippingAddress }}</span>
+      <div class="shipping-info">
+        <span class="shipping-icon">🚚</span>
+        <div class="shipping-details">
+          <strong>Dirección de Envío:</strong>
+          <span>{{ getShippingAddressText(order.shippingAddress) }}</span>
+        </div>
       </div>
 
       <!-- Notes -->

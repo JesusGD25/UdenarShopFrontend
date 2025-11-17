@@ -1,11 +1,27 @@
 export interface Product {
-  id: number;
-  name: string;
+  id: string;
+  title: string;
+  slug: string;
   description: string;
   price: number;
-  imageUrl?: string;
-  category?: string;
+  condition: string;
+  images: string[];
   stock?: number;
+  isSold: boolean;
+  rating: string;
+  totalReviews: number;
+  viewsCount: number;
+  likesCount: number;
+  createdAt: string;
+  updatedAt: string;
+  userId: string;
+  categoryId?: string;
+  category?: {
+    id: string;
+    name: string;
+    slug: string;
+    description?: string;
+  };
 }
 
 export interface CreateProductDto {

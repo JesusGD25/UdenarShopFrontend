@@ -1,180 +1,153 @@
-<div class="checkout-overlay">
-  <div class="checkout-modal">
+<div class="checkout-container">
+  <div class="checkout-content">
     <div class="checkout-header">
-      <h2>💳 Pasarela de Pago</h2>
+      <h2>Finalizar Compra</h2>
       <button class="close-btn" (click)="onCancel()" [disabled]="isProcessing">✕</button>
     </div>
 
-    <div class="checkout-content">
-      <!-- Resumen del pedido -->
-      <div class="order-summary">
-        <h3>Resumen del Pedido</h3>
-        <div class="summary-items">
-          <div class="summary-item" *ngFor="let item of cartItems">
-            <span>{{item.product.title}} (x{{item.quantity}})</span>
-            <span>${{getItemSubtotal(item) | number:'1.0-0'}}</span>
-          </div>
-        </div>
-        <div class="summary-total">
-          <strong>Total a pagar:</strong>
-          <strong class="total-amount">${{total | number:'1.0-0'}}</strong>
+    <div class="order-summary">
+      <h3>Resumen del Pedido</h3>
+      <div class="cart-items">
+        <div *ngFor="let item of cartItems" class="cart-item">
+          <span class="item-name">{{ item.product.title }}</span>
+          <span class="item-quantity">x{{ item.quantity }}</span>
+          <span class="item-price">${{ getItemSubtotal(item) | number:'1.0-0' }}</span>
         </div>
       </div>
+      <div class="total">
+        <span>Total:</span>
+        <span>${{ total | number:'1.0-0' }}</span>
+      </div>
+    </div>
 
-      <!-- Formulario de pago -->
-      <form class="payment-form" (ngSubmit)="onSubmit()">
+    <form (ngSubmit)="onSubmit()" class="payment-form">
+      <div class="form-section">
         <h3>Información de Pago</h3>
         
         <div class="form-group">
-          <label for="cardNumber">Número de Tarjeta *</label>
+          <label>Número de Tarjeta</label>
           <input 
             type="text" 
-            id="cardNumber" 
             [(ngModel)]="paymentData.cardNumber"
             name="cardNumber"
             (input)="formatCardNumber($event)"
             placeholder="1234 5678 9012 3456"
             maxlength="16"
             required
-            [disabled]="isProcessing"
-          >
+            [disabled]="isProcessing">
         </div>
 
         <div class="form-group">
-          <label for="cardHolder">Nombre del Titular *</label>
+          <label>Nombre del Titular</label>
           <input 
             type="text" 
-            id="cardHolder" 
             [(ngModel)]="paymentData.cardHolder"
             name="cardHolder"
-            placeholder="JUAN PÉREZ"
+            placeholder="Nombre como aparece en la tarjeta"
             required
-            [disabled]="isProcessing"
-          >
+            [disabled]="isProcessing">
         </div>
 
         <div class="form-row">
           <div class="form-group">
-            <label for="expiryDate">Fecha de Expiración *</label>
+            <label>Fecha de Expiración</label>
             <input 
               type="text" 
-              id="expiryDate" 
               [(ngModel)]="paymentData.expiryDate"
               name="expiryDate"
               (input)="formatExpiryDate($event)"
               placeholder="MM/YY"
               maxlength="5"
               required
-              [disabled]="isProcessing"
-            >
+              [disabled]="isProcessing">
           </div>
 
           <div class="form-group">
-            <label for="cvv">CVV *</label>
+            <label>CVV</label>
             <input 
               type="text" 
-              id="cvv" 
               [(ngModel)]="paymentData.cvv"
               name="cvv"
               (input)="formatCVV($event)"
               placeholder="123"
               maxlength="4"
               required
-              [disabled]="isProcessing"
-            >
+              [disabled]="isProcessing">
           </div>
         </div>
+      </div>
 
+      <div class="form-section">
         <h3>Información de Envío</h3>
-
+        
         <div class="form-group">
-          <label for="email">Email *</label>
+          <label>Email</label>
           <input 
             type="email" 
-            id="email" 
             [(ngModel)]="paymentData.email"
             name="email"
-            placeholder="correo@ejemplo.com"
+            placeholder="tu@email.com"
             required
-            [disabled]="isProcessing"
-          >
+            [disabled]="isProcessing">
         </div>
 
         <div class="form-group">
-          <label for="address">Dirección *</label>
+          <label>Dirección</label>
           <input 
             type="text" 
-            id="address" 
             [(ngModel)]="paymentData.address"
             name="address"
-            placeholder="Calle Principal #123"
+            placeholder="Calle, número, apartamento"
             required
-            [disabled]="isProcessing"
-          >
+            [disabled]="isProcessing">
         </div>
 
         <div class="form-row">
           <div class="form-group">
-            <label for="city">Ciudad *</label>
+            <label>Ciudad</label>
             <input 
               type="text" 
-              id="city" 
               [(ngModel)]="paymentData.city"
               name="city"
-              placeholder="Pasto"
+              placeholder="Ciudad"
               required
-              [disabled]="isProcessing"
-            >
+              [disabled]="isProcessing">
           </div>
 
           <div class="form-group">
-            <label for="postalCode">Código Postal</label>
+            <label>Código Postal</label>
             <input 
               type="text" 
-              id="postalCode" 
               [(ngModel)]="paymentData.postalCode"
               name="postalCode"
-              placeholder="520001"
-              [disabled]="isProcessing"
-            >
+              placeholder="12345"
+              [disabled]="isProcessing">
           </div>
         </div>
 
         <div class="form-group">
-          <label for="notes">Notas adicionales (Opcional)</label>
-          <textarea
-            id="notes"
+          <label>Notas (Opcional)</label>
+          <textarea 
             [(ngModel)]="paymentData.notes"
             name="notes"
-            placeholder="Ej: Por favor, llamar antes de entregar"
+            placeholder="Instrucciones especiales para la entrega"
             rows="3"
-            [disabled]="isProcessing"
-          ></textarea>
+            [disabled]="isProcessing"></textarea>
         </div>
+      </div>
 
-        <div class="error-message" *ngIf="errorMessage">
-          ⚠️ {{errorMessage}}
-        </div>
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
 
-        <div class="form-actions">
-          <button 
-            type="button" 
-            class="btn-cancel" 
-            (click)="onCancel()"
-            [disabled]="isProcessing"
-          >
-            Cancelar
-          </button>
-          <button 
-            type="submit" 
-            class="btn-pay"
-            [disabled]="isProcessing"
-          >
-            <span *ngIf="!isProcessing">🔒 Pagar ${{total | number:'1.0-0'}}</span>
-            <span *ngIf="isProcessing">Procesando...</span>
-          </button>
-        </div>
-      </form>
-    </div>
+      <div class="form-actions">
+        <button type="button" class="btn-cancel" (click)="onCancel()" [disabled]="isProcessing">
+          Cancelar
+        </button>
+        <button type="submit" class="btn-submit" [disabled]="isProcessing">
+          {{ isProcessing ? 'Procesando...' : 'Confirmar Pago' }}
+        </button>
+      </div>
+    </form>
   </div>
 </div>

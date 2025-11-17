@@ -1,45 +1,18 @@
+import { Product } from './product.model';
+
 export interface CartItem {
-  id: string;
-  quantity: number;
-  createdAt: Date;
-  cartId: string;
+  id: number; // Mantener como number
   productId: string;
-  product: {
-    id: string;
-    title: string;
-    slug: string;
-    description: string;
-    price: string; // El backend envía como string
-    condition: string;
-    images: string[];
-    stock: number;
-    isSold: boolean;
-    rating: string;
-    totalReviews: number;
-    viewsCount: number;
-    isActive: boolean;
-    createdAt: Date;
-    updatedAt: Date;
-    sellerId: string;
-    categoryId: string;
-    category?: {
-      id: string;
-      name: string;
-      slug: string;
-      description: string;
-      iconUrl: string;
-      isActive: boolean;
-      createdAt: Date;
-    };
-  };
+  quantity: number;
+  product: Product;
 }
 
 export interface Cart {
-  id: string;
+  id: number;
   userId: string;
-  createdAt: Date;
-  updatedAt: Date;
   items: CartItem[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface AddToCartDto {
