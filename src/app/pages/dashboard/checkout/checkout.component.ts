@@ -53,17 +53,40 @@ export class CheckoutComponent {
     this.errorMessage = '';
 
     try {
-      // Simular proceso de pago sin llamar al servicio real
-      console.log('Procesando pago con datos:', this.paymentData);
-      console.log('Items del carrito:', this.cartItems);
-      console.log('Total:', this.total);
+      // Construir dirección de envío
+      const shippingAddress = `${this.paymentData.address}, ${this.paymentData.city}${this.paymentData.postalCode ? ', ' + this.paymentData.postalCode : ''}`;
 
-      // Simular delay de procesamiento
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Paso 1: Crear la orden
+      console.log('Creando orden...');
+      const createOrderDto: CreateOrderDto = {
+        paymentMethod: PaymentMethod.CARD,
+        shippingAddress: shippingAddress,
+        notes: this.paymentData.notes || undefined
+      };
 
-      // Emitir evento de pago confirmado
+      const order = await this.orderService.createOrder(createOrderDto).toPromise();
+      console.log('Orden creada exitosamente:', order);
+
+      if (!order) {
+        throw new Error('Error al crear la orden');
+      }
+
+      // Paso 2: Procesar el pago
+      console.log('Procesando pago para orden:', order.id);
+      const processPaymentDto: ProcessPaymentDto = {
+        paymentMethod: PaymentMethod.CARD,
+        cardNumber: this.paymentData.cardNumber.replace(/\s/g, ''),
+        cvv: this.paymentData.cvv,
+        expiryDate: this.paymentData.expiryDate
+      };
+
+      const paidOrder = await this.orderService.processPayment(order.id, processPaymentDto).toPromise();
+      console.log('Pago procesado exitosamente:', paidOrder);
+
+      // Emitir evento de pago confirmado con la orden real
       const paymentResult = {
-        orderId: Date.now(), // Simular ID de orden
+        orderId: order.id,
+        order: paidOrder,
         cardNumber: '****' + this.paymentData.cardNumber.slice(-4),
         amount: this.total,
         timestamp: new Date(),
@@ -74,12 +97,14 @@ export class CheckoutComponent {
         }
       };
 
-      console.log('Pago procesado exitosamente:', paymentResult);
+      console.log('Emitiendo confirmación de pago:', paymentResult);
       this.confirmPayment.emit(paymentResult);
 
     } catch (error: any) {
       console.error('Error en el proceso de pago:', error);
-      this.errorMessage = 'Error al procesar el pago. Por favor, intenta nuevamente.';
+      const errorMsg = error?.error?.message || error?.message || 'Error al procesar el pago';
+      this.errorMessage = errorMsg;
+      alert(`❌ Error: ${errorMsg}`);
     } finally {
       this.isProcessing = false;
     }

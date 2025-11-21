@@ -1,10 +1,11 @@
 export enum OrderStatus {
-  PENDING = 'PENDING',
-  PROCESSING = 'PROCESSING', 
-  SHIPPED = 'SHIPPED',
-  DELIVERED = 'DELIVERED',
-  CANCELLED = 'CANCELLED',
-  COMPLETED = 'COMPLETED'
+  PENDING = 'pending',
+  PAID = 'paid',
+  PROCESSING = 'processing', 
+  SHIPPED = 'shipped',
+  DELIVERED = 'delivered',
+  CANCELLED = 'cancelled',
+  COMPLETED = 'completed'
 }
 
 export enum PaymentStatus {
@@ -16,27 +17,22 @@ export enum PaymentStatus {
 }
 
 export enum PaymentMethod {
-  CARD = 'CARD',
-  PAYPAL = 'PAYPAL',
-  BANK_TRANSFER = 'BANK_TRANSFER'
+  CASH = 'cash',
+  CARD = 'card',
+  TRANSFER = 'transfer'
 }
 
 export interface CreateOrderDto {
-  cartId: number;
-  shippingAddress: {
-    street: string;
-    city: string;
-    state: string;
-    zipCode: string;
-    country: string;
-  };
-  paymentMethod: string;
+  paymentMethod: PaymentMethod;
+  shippingAddress: string;
+  notes?: string;
 }
 
 export interface ProcessPaymentDto {
-  orderId: string;
-  paymentMethodId: string;
-  amount: number;
+  paymentMethod: PaymentMethod;
+  cardNumber?: string;
+  cvv?: string;
+  expiryDate?: string;
 }
 
 export interface Order {

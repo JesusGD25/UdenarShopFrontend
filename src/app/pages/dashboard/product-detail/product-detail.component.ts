@@ -304,13 +304,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     .subscribe({
       next: (cart) => {
         this.isAddingToCart = false;
-        alert('✅ Producto agregado al carrito correctamente');
-        
-        // Opcional: Preguntar si quiere ir al carrito
-        const goToCart = confirm('¿Deseas ir al carrito ahora?');
-        if (goToCart) {
-          this.router.navigate(['/dashboard/cart']); // Cambiar a /dashboard/cart
-        }
+        alert('✅ Producto agregado al carrito');
       },
       error: (err) => {
         console.error('Error adding to cart:', err);

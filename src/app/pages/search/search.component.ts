@@ -210,8 +210,13 @@ export class SearchComponent implements OnInit {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  viewProduct(productId: string): void {
-    this.router.navigate(['/products', productId]);
+  viewProduct(productId: string, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+    console.log('Search - Navegando a producto:', productId);
+    this.router.navigate(['/dashboard/products', productId]);
   }
 
   formatPrice(price: number): string {

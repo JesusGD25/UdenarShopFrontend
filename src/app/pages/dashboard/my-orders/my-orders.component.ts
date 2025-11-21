@@ -55,6 +55,8 @@ export class MyOrdersComponent implements OnInit {
     switch (status) {
       case OrderStatus.PENDING:
         return '#ff9500';
+      case OrderStatus.PAID:
+        return '#17a2b8';
       case OrderStatus.PROCESSING:
         return '#007bff';
       case OrderStatus.SHIPPED:
@@ -74,6 +76,8 @@ export class MyOrdersComponent implements OnInit {
     switch (status) {
       case OrderStatus.PENDING:
         return '⏳';
+      case OrderStatus.PAID:
+        return '💳';
       case OrderStatus.PROCESSING:
         return '⚙️';
       case OrderStatus.SHIPPED:
@@ -92,6 +96,7 @@ export class MyOrdersComponent implements OnInit {
   getStatusText(status: OrderStatus): string {
     const statusTexts: Record<OrderStatus, string> = {
       [OrderStatus.PENDING]: 'Pendiente',
+      [OrderStatus.PAID]: 'Pagada',
       [OrderStatus.PROCESSING]: 'Procesando',
       [OrderStatus.SHIPPED]: 'Enviada',
       [OrderStatus.DELIVERED]: 'Entregada',
@@ -103,7 +108,9 @@ export class MyOrdersComponent implements OnInit {
   }
 
   canCancelOrder(order: Order): boolean {
-    return order.status === OrderStatus.PENDING || order.status === OrderStatus.PROCESSING;
+    return order.status === OrderStatus.PENDING || 
+           order.status === OrderStatus.PAID || 
+           order.status === OrderStatus.PROCESSING;
   }
 
   getShippingAddressText(shippingAddress: any): string {
@@ -126,8 +133,8 @@ export class MyOrdersComponent implements OnInit {
   getPaymentMethodText(paymentMethod: PaymentMethod): string {
     const paymentMethodTexts: Record<PaymentMethod, string> = {
       [PaymentMethod.CARD]: 'Tarjeta de Crédito',
-      [PaymentMethod.PAYPAL]: 'PayPal',
-      [PaymentMethod.BANK_TRANSFER]: 'Transferencia Bancaria'
+      [PaymentMethod.CASH]: 'Efectivo',
+      [PaymentMethod.TRANSFER]: 'Transferencia Bancaria'
     };
 
     return paymentMethodTexts[paymentMethod] || paymentMethod;

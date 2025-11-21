@@ -191,21 +191,21 @@ export class MyCartComponent implements OnInit, OnDestroy {
     console.log('=== PROCESANDO PAGO ===');
     console.log('Payment data recibida:', paymentData);
     
+    // Cerrar checkout
+    this.showCheckout = false;
+    
     // Mostrar mensaje de éxito
     alert(`¡Pago procesado exitosamente! ✅
     
 Número de orden: ${paymentData.orderId}
-Total pagado: $${paymentData.amount}
+Total pagado: $${paymentData.amount.toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}
 Tarjeta: ${paymentData.cardNumber}
 
-¡Gracias por tu compra!`);
+¡Gracias por tu compra!
+
+Puedes ver tu orden en la sección "Mis Órdenes".`);
     
-    // Cerrar checkout primero
-    this.showCheckout = false;
-    
-    // Luego vaciar el carrito
-    setTimeout(() => {
-      this.vaciarCarrito();
-    }, 500);
+    // Recargar el carrito desde el backend (ya estará vacío porque el backend lo limpia automáticamente)
+    this.loadCart();
   }
 }

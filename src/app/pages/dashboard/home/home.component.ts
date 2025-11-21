@@ -90,7 +90,12 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  viewProduct(productId: string): void {
+  viewProduct(productId: string, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+    console.log('Navegando a producto:', productId);
     this.router.navigate(['/dashboard/products', productId]);
   }
 

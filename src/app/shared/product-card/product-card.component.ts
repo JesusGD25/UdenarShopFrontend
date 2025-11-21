@@ -24,7 +24,12 @@ export class ProductCardComponent {
     }).format(price);
   }
 
-  viewProduct(): void {
+  viewProduct(event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+    console.log('Product card - Navegando a producto:', this.product.id);
     this.router.navigate(['/dashboard/products', this.product.id]);
   }
 }

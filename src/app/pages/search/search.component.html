@@ -135,7 +135,7 @@
           <div class="products-grid">
             @for (product of products; track product.id) {
               <div class="product-card">
-                <div class="product-image-container" (click)="viewProduct(product.id)">
+                <div class="product-image-container" (click)="viewProduct(product.id, $event)">
                   @if (product.images && product.images.length > 0) {
                     <img
                       [src]="product.images[0]"
@@ -180,7 +180,7 @@
                     </div>
                   }
 
-                  <button class="btn-view-more" (click)="viewProduct(product.id); $event.stopPropagation()">
+                  <button class="btn-view-more" type="button" (click)="viewProduct(product.id, $event)">
                     Ver más
                   </button>
                 </div>

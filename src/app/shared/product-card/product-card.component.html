@@ -1,4 +1,4 @@
-<div class="product-card" [class.sold]="product.isSold" (click)="viewProduct()">
+<div class="product-card" [class.sold]="product.isSold" (click)="viewProduct($event)">
     <img 
       [src]="product.images && product.images.length > 0 ? product.images[0] : 'assets/placeholder.jpg'" 
       [alt]="product.title" 
@@ -22,5 +22,5 @@
           <span class="status">VENDIDO</span>
         }
     </div>
-    <button class="btn-view-more">Ver más</button>
+    <button class="btn-view-more" type="button" (click)="viewProduct($event)">Ver más</button>
 </div>

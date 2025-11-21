@@ -50,7 +50,7 @@
     } @else if (recentProducts.length > 0) {
       <div class="products-grid">
         @for (product of recentProducts; track product.id) {
-          <div class="product-card" (click)="viewProduct(product.id)">
+          <div class="product-card" (click)="viewProduct(product.id, $event)">
             <div class="product-image">
               @if (product.images && product.images.length > 0) {
                 <img [src]="product.images[0]" [alt]="product.title" />
@@ -122,7 +122,7 @@
     @if (popularProducts.length > 0) {
       <div class="products-grid">
         @for (product of popularProducts; track product.id) {
-          <div class="product-card" (click)="viewProduct(product.id)">
+          <div class="product-card" (click)="viewProduct(product.id, $event)">
             <div class="product-image">
               @if (product.images && product.images.length > 0) {
                 <img [src]="product.images[0]" [alt]="product.title" />
